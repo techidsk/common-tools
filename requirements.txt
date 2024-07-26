@@ -1,0 +1,5 @@
+colorama==0.4.6
+loguru==0.7.2
+pillow==10.4.0
+watchdog==4.0.1
+win32-setctime==1.1.0
