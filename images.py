@@ -8,6 +8,7 @@ from loguru import logger
 from PIL import Image
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
+from PIL import ImageOps
 
 PREFIX = "renamed_"
 
@@ -106,7 +107,6 @@ class MyHandler(FileSystemEventHandler):
             print(f"Directory modified: {event.src_path}")
             # 在这里调用你想要执行的函数
             handle_folder_change(event.src_path)
-        
 
     def on_created(self, event):
         if event.is_directory:
@@ -125,11 +125,63 @@ class MyHandler(FileSystemEventHandler):
             handle_folder_change(event.src_path)
 
 
+def expand_image_edges(
+    image_path: str,
+    padding: int = 20,
+    fill_color: tuple = (255, 255, 255),  # 默认白色
+    top: bool = True,
+    bottom: bool = True,
+    left: bool = True,
+    right: bool = True,
+):
+    """扩充图片边缘
+
+    Args:
+        image_path: 图片路径
+        padding: 边缘填充像素数
+        fill_color: 填充颜色，RGB格式的元组，默认白色 (255, 255, 255)
+        top: 是否填充上边缘
+        bottom: 是否填充下边缘
+        left: 是否填充左边缘
+        right: 是否填充右边缘
+    """
+    try:
+        image_file = Path(image_path)
+        image = Image.open(image_file)
+
+        # 如果图片是 RGBA 模式，需要先转换为 RGB
+        if image.mode == "RGBA":
+            background = Image.new("RGB", image.size, fill_color)
+            background.paste(image, mask=image.split()[3])
+            image = background
+
+        # 计算每个方向的填充像素
+        border = (
+            padding if left else 0,  # 左
+            padding if top else 0,  # 上
+            padding if right else 0,  # 右
+            padding if bottom else 0,  # 下
+        )
+
+        # 扩充边缘
+        expanded_image = ImageOps.expand(image, border=border, fill=fill_color)
+
+        # 保存图片
+        new_name = f"expanded_{image_file.stem}{image_file.suffix}"
+        new_path = image_file.parent / new_name
+        expanded_image.save(new_path, quality=95)
+
+        return new_path
+    except Exception as e:
+        logger.error(f"扩充图片边缘失败: {e}")
+        return None
+
+
 if __name__ == "__main__":
     # rename_image(r"C:\Users\ecpkn\Desktop\NewUI\0_0.png")
 
-    # loop_folder(
-    #     r"C:\Users\ecpkn\Desktop\NewUI",
-    #     handle_image,
-    # )
-    listen_folder(r"C:\Users\ecpkn\Desktop\NewUI")
+    loop_folder(
+        r"C:\Users\ecpkn\Desktop\1",
+        handle_image,
+    )
+    # listen_folder(r"C:\Users\ecpkn\Desktop\NewUI")
