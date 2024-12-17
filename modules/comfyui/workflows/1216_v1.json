@@ -1,0 +1,1511 @@
+{
+  "2": {
+    "inputs": {
+      "vae_name": "flux_vae.safetensors"
+    },
+    "class_type": "VAELoader"
+  },
+  "3": {
+    "inputs": {
+      "clip_name1": "ViT-L-14-TEXT-detail-improved-hiT-GmP-HF.safetensors",
+      "clip_name2": "t5xxl_fp8_e4m3fn.safetensors",
+      "type": "flux"
+    },
+    "class_type": "DualCLIPLoaderGGUF"
+  },
+  "4": {
+    "inputs": {
+      "text": [
+        "231",
+        0
+      ],
+      "clip": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "Text to Conditioning"
+  },
+  "5": {
+    "inputs": {
+      "image": "",
+      "image_base64": "",
+      "upload": "image"
+    },
+    "class_type": "ml-ImageFromBase64"
+  },
+  "6": {
+    "inputs": {
+      "module": 32,
+      "mode": "manual",
+      "position": "center",
+      "image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "ml-ImageModuleCrop"
+  },
+  "7": {
+    "inputs": {
+      "channel": "red",
+      "image": [
+        "223",
+        0
+      ]
+    },
+    "class_type": "ImageToMask"
+  },
+  "8": {
+    "inputs": {
+      "image": "",
+      "image_base64": "",
+      "upload": "image"
+    },
+    "class_type": "ml-ImageFromBase64"
+  },
+  "9": {
+    "inputs": {
+      "module": 32,
+      "mode": "manual",
+      "position": "center",
+      "image": [
+        "557",
+        0
+      ]
+    },
+    "class_type": "ml-ImageModuleCrop"
+  },
+  "12": {
+    "inputs": {
+      "image": "",
+      "image_base64": "",
+      "upload": "image"
+    },
+    "class_type": "ml-ImageFromBase64"
+  },
+  "13": {
+    "inputs": {
+      "smaller_side": 1024,
+      "larger_side": 0,
+      "scale_factor": 0,
+      "upscale_method": "lanczos",
+      "image": [
+        "219",
+        0
+      ]
+    },
+    "class_type": "ml-ResizeImage"
+  },
+  "14": {
+    "inputs": {
+      "smaller_side": 1024,
+      "larger_side": 0,
+      "scale_factor": 0,
+      "upscale_method": "lanczos",
+      "image": [
+        "6",
+        0
+      ]
+    },
+    "class_type": "ml-ResizeImage"
+  },
+  "16": {
+    "inputs": {
+      "smaller_side": 1024,
+      "larger_side": 0,
+      "scale_factor": 0,
+      "upscale_method": "lanczos",
+      "image": [
+        "557",
+        0
+      ]
+    },
+    "class_type": "ml-ResizeImage"
+  },
+  "20": {
+    "inputs": {
+      "samples": [
+        "312",
+        1
+      ],
+      "vae": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "VAEDecode"
+  },
+  "25": {
+    "inputs": {
+      "amount": 12,
+      "device": "gpu",
+      "mask": [
+        "79",
+        0
+      ]
+    },
+    "class_type": "MaskBlur+"
+  },
+  "26": {
+    "inputs": {
+      "model": [
+        "27",
+        0
+      ]
+    },
+    "class_type": "DifferentialDiffusion"
+  },
+  "27": {
+    "inputs": {
+      "unet_name": "flux/flux1-fill-dev-Q6_K.gguf"
+    },
+    "class_type": "UnetLoaderGGUF"
+  },
+  "29": {
+    "inputs": {
+      "noise_mask": true,
+      "positive": [
+        "4",
+        0
+      ],
+      "negative": [
+        "564",
+        0
+      ],
+      "pixels": [
+        "226",
+        0
+      ],
+      "mask": [
+        "25",
+        0
+      ],
+      "vae": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "InpaintModelConditioning"
+  },
+  "34": {
+    "inputs": {
+      "guidance": 75,
+      "conditioning": [
+        "229",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance"
+  },
+  "37": {
+    "inputs": {
+      "style_model_name": "flux1-redux-dev.safetensors"
+    },
+    "class_type": "StyleModelLoader"
+  },
+  "39": {
+    "inputs": {
+      "clip_name": "sigclip_vision_patch14_384.safetensors"
+    },
+    "class_type": "CLIPVisionLoader"
+  },
+  "42": {
+    "inputs": {
+      "value": 2657923422,
+      "mode": true,
+      "action": "fixed",
+      "last_seed": 2657923422
+    },
+    "class_type": "GlobalSeed //Inspire"
+  },
+  "79": {
+    "inputs": {
+      "iterations": 64,
+      "border": true,
+      "invert": true,
+      "masks": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "ml-ErodeMask"
+  },
+  "84": {
+    "inputs": {
+      "image": "",
+      "image_base64": "",
+      "upload": "image"
+    },
+    "class_type": "ml-ImageFromBase64"
+  },
+  "85": {
+    "inputs": {
+      "smaller_side": 1024,
+      "larger_side": 0,
+      "scale_factor": 0,
+      "upscale_method": "lanczos",
+      "image": [
+        "220",
+        0
+      ]
+    },
+    "class_type": "ml-ResizeImage"
+  },
+  "90": {
+    "inputs": {
+      "margin": [
+        "139",
+        0
+      ],
+      "width": [
+        "329",
+        0
+      ],
+      "height": [
+        "329",
+        1
+      ],
+      "resize_method": "bilinear",
+      "keep_aspect_ratio": true,
+      "color": "black",
+      "image": [
+        "13",
+        0
+      ],
+      "mask": [
+        "504",
+        0
+      ]
+    },
+    "class_type": "ml-MaskToBbox"
+  },
+  "93": {
+    "inputs": {
+      "margin": [
+        "139",
+        0
+      ],
+      "width": [
+        "329",
+        0
+      ],
+      "height": [
+        "329",
+        1
+      ],
+      "resize_method": "bilinear",
+      "keep_aspect_ratio": true,
+      "color": "black",
+      "image": [
+        "215",
+        0
+      ],
+      "mask": [
+        "504",
+        0
+      ]
+    },
+    "class_type": "ml-MaskToBbox"
+  },
+  "97": {
+    "inputs": {
+      "blur_radius": 2,
+      "sigma": 1,
+      "image": [
+        "93",
+        1
+      ]
+    },
+    "class_type": "ImageBlur"
+  },
+  "103": {
+    "inputs": {
+      "type": "image",
+      "width": 512,
+      "height": 512,
+      "resolution": "1024x1024 (1.0)",
+      "batch_size": 1,
+      "color": 0,
+      "image": [
+        "331",
+        0
+      ]
+    },
+    "class_type": "ml-NewImage"
+  },
+  "107": {
+    "inputs": {
+      "image": [
+        "20",
+        0
+      ]
+    },
+    "class_type": "GetImageSize+"
+  },
+  "108": {
+    "inputs": {
+      "value": "a - b",
+      "a": [
+        "107",
+        0
+      ],
+      "b": [
+        "110",
+        0
+      ]
+    },
+    "class_type": "SimpleMath+"
+  },
+  "110": {
+    "inputs": {
+      "image": [
+        "331",
+        0
+      ]
+    },
+    "class_type": "GetImageSize+"
+  },
+  "111": {
+    "inputs": {
+      "width": [
+        "108",
+        0
+      ],
+      "height": [
+        "107",
+        1
+      ],
+      "position": "top-left",
+      "x_offset": [
+        "110",
+        0
+      ],
+      "y_offset": 0,
+      "image": [
+        "20",
+        0
+      ]
+    },
+    "class_type": "ImageCrop+"
+  },
+  "127": {
+    "inputs": {
+      "model": "gpt-4o-mini",
+      "base_url": "api.ganjiuwanshi.com",
+      "secret_key": "sk-P4nT6VcpCdKewq0M9b92469b4d94487c9e1d715d52Fd1c93",
+      "system_prompt": "You will be analyzing images to provide clear, objective descriptions of the main item shown. Your description should focus on the physical characteristics and notable features while maintaining a neutral, descriptive tone.\n\nWhen describing the item, analyze and include the following aspects in your description:\n1. Material and texture (e.g., leather, cotton, metal, smooth, textured, matte, glossy)\n2. Color and finish (including any patterns or color variations)\n3. Physical form and shape characteristics\n4. Notable design features or unique elements\n5. Viewing angle/orientation of the item in the image\n6. Construction details and visible components\n\nImportant guidelines:\n- Focus solely on the main item - do not describe backgrounds or surrounding elements\n- Use objective, precise language\n- Explicitly state the viewing angle (front view, side view, rear view, etc.)\n- Describe features in a logical order (general to specific)\n- Avoid subjective opinions or style judgments\n- Do not include pricing, brand names, or comparative statements\n- Response in 70 words\n\nFormat your response as follows:\nFirst state the basic category and primary characteristics of the item (e.g., \"A structured leather handbag\" or \"A ceramic coffee mug\")\nThen provide the detailed description following the aspects listed above\nEnd with the viewing perspective\n\nExample response:\nA structured leather tote bag. The bag features smooth black leather construction with contrast stitching along the seams. It has a rectangular shape with gently curved top edges and protective metal feet at the base. The design includes dual rolled top handles, an exterior slip pocket, and polished gold-tone hardware. The bag is shown from a front three-quarter view, displaying both the front face and right side.\n\nPlease analyze the following image and provide a detailed description following these guidelines",
+      "prompt": "Describe the clothes",
+      "quality": "low",
+      "max_tokens": 1023,
+      "temperature": 0.4,
+      "image": [
+        "331",
+        0
+      ]
+    },
+    "class_type": "ml-LLMAsk(OpenAI)"
+  },
+  "139": {
+    "inputs": {
+      "value": 64
+    },
+    "class_type": "easy int"
+  },
+  "152": {
+    "inputs": {
+      "any_01": [
+        "256",
+        0
+      ],
+      "any_02": [
+        "29",
+        0
+      ]
+    },
+    "class_type": "Any Switch (rgthree)"
+  },
+  "166": {
+    "inputs": {
+      "any_01": [
+        "185",
+        0
+      ],
+      "any_02": [
+        "198",
+        0
+      ]
+    },
+    "class_type": "Any Switch (rgthree)"
+  },
+  "167": {
+    "inputs": {
+      "any_01": [
+        "186",
+        0
+      ],
+      "any_02": [
+        "14",
+        0
+      ]
+    },
+    "class_type": "Any Switch (rgthree)"
+  },
+  "185": {
+    "inputs": {
+      "image": [
+        "522",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "186": {
+    "inputs": {
+      "image": [
+        "521",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "187": {
+    "inputs": {
+      "image": [
+        "331",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "194": {
+    "inputs": {
+      "any_01": [
+        "111",
+        0
+      ],
+      "any_02": [
+        "195",
+        0
+      ]
+    },
+    "class_type": "Any Switch (rgthree)"
+  },
+  "195": {
+    "inputs": {
+      "image": [
+        "20",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "198": {
+    "inputs": {
+      "image": [
+        "16",
+        0
+      ]
+    },
+    "class_type": "ImageInvert"
+  },
+  "206": {
+    "inputs": {
+      "prompt": ""
+    },
+    "class_type": "SeargePromptText"
+  },
+  "208": {
+    "inputs": {
+      "any_01": [
+        "127",
+        0
+      ],
+      "any_02": [
+        "232",
+        0
+      ]
+    },
+    "class_type": "Any Switch (rgthree)"
+  },
+  "215": {
+    "inputs": {
+      "image": [
+        "85",
+        0
+      ]
+    },
+    "class_type": "ImageInvert"
+  },
+  "219": {
+    "inputs": {
+      "module": 16,
+      "mode": "manual",
+      "position": "center",
+      "image": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "ml-ImageModuleCrop"
+  },
+  "220": {
+    "inputs": {
+      "module": 16,
+      "mode": "manual",
+      "position": "center",
+      "image": [
+        "551",
+        0
+      ]
+    },
+    "class_type": "ml-ImageModuleCrop"
+  },
+  "223": {
+    "inputs": {
+      "select": [
+        "300",
+        0
+      ],
+      "sel_mode": false,
+      "input1": [
+        "185",
+        0
+      ],
+      "input2": [
+        "198",
+        0
+      ],
+      "input3": [
+        "300",
+        0
+      ]
+    },
+    "class_type": "ImpactSwitch"
+  },
+  "226": {
+    "inputs": {
+      "select": [
+        "300",
+        0
+      ],
+      "sel_mode": false,
+      "input1": [
+        "186",
+        0
+      ],
+      "input2": [
+        "14",
+        0
+      ]
+    },
+    "class_type": "ImpactSwitch"
+  },
+  "229": {
+    "inputs": {
+      "select": [
+        "300",
+        0
+      ],
+      "sel_mode": false,
+      "input1": [
+        "256",
+        0
+      ],
+      "input2": [
+        "29",
+        0
+      ]
+    },
+    "class_type": "ImpactSwitch"
+  },
+  "230": {
+    "inputs": {
+      "select": [
+        "300",
+        0
+      ],
+      "sel_mode": false,
+      "input1": [
+        "111",
+        0
+      ],
+      "input2": [
+        "195",
+        0
+      ]
+    },
+    "class_type": "ImpactSwitch"
+  },
+  "231": {
+    "inputs": {
+      "select": [
+        "300",
+        0
+      ],
+      "sel_mode": false,
+      "input1": [
+        "127",
+        0
+      ],
+      "input2": [
+        "232",
+        0
+      ]
+    },
+    "class_type": "ImpactSwitch"
+  },
+  "232": {
+    "inputs": {
+      "model": "aws-claude-3-haiku-20240307",
+      "base_url": "api.ganjiuwanshi.com",
+      "secret_key": "sk-P4nT6VcpCdKewq0M9b92469b4d94487c9e1d715d52Fd1c93",
+      "system_prompt": "You are a professional prompt engineer specializing in language translation. Your task is to:\n\n1. Translate Chinese/mixed-language inputs into natural, fluent English\n2. Maintain the original meaning while enhancing descriptive details\n3. Structure the output in a clear, coherent way\n4. Keep the emotional tone and intent of the original prompt\n5. Only response the enhanced words\n\nExample Input: '红色贝雷帽，全身照片，超短裙，黑丝长筒袜，海边'\nExample Output: 'A full-body portrait of a stylish woman wearing a red beret, ultra-mini skirt, and black thigh-high stockings, posed elegantly by the seaside. The ocean backdrop creates a romantic atmosphere'\n",
+      "prompt": "",
+      "quality": "low",
+      "max_tokens": 512,
+      "text_prompt": [
+        "206",
+        0
+      ],
+      "temperature": 0.9
+    },
+    "class_type": "ml-LLMAsk(OpenAI)"
+  },
+  "244": {
+    "inputs": {
+      "title_regex": "Switch*",
+      "input_regex": ".*",
+      "group_regex": ".*",
+      "INT": [
+        "300",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "254": {
+    "inputs": {
+      "CLIP": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere"
+  },
+  "255": {
+    "inputs": {
+      "VAE": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere"
+  },
+  "256": {
+    "inputs": {
+      "downsampling_factor": 3,
+      "downsampling_function": "bicubic",
+      "mode": "autocrop with mask",
+      "weight": 1,
+      "autocrop_margin": 0.1,
+      "conditioning": [
+        "29",
+        0
+      ],
+      "image": [
+        "187",
+        0
+      ],
+      "mask": [
+        "275",
+        0
+      ],
+      "style_model": [
+        "37",
+        0
+      ],
+      "clip_vision": [
+        "39",
+        0
+      ]
+    },
+    "class_type": "ReduxAdvanced"
+  },
+  "257": {
+    "inputs": {
+      "STYLE_MODEL": [
+        "37",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere"
+  },
+  "260": {
+    "inputs": {
+      "CLIP_VISION": [
+        "39",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere"
+  },
+  "272": {
+    "inputs": {
+      "image": [
+        "97",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "275": {
+    "inputs": {
+      "channel": "red",
+      "image": [
+        "272",
+        0
+      ]
+    },
+    "class_type": "ImageToMask"
+  },
+  "287": {
+    "inputs": {
+      "value": true
+    },
+    "class_type": "Bool-🔬"
+  },
+  "290": {
+    "inputs": {
+      "ANY": [
+        "287",
+        0
+      ],
+      "IF_TRUE": [
+        "291",
+        0
+      ],
+      "IF_FALSE": [
+        "292",
+        0
+      ]
+    },
+    "class_type": "If ANY return A else B-🔬"
+  },
+  "291": {
+    "inputs": {
+      "value": 1
+    },
+    "class_type": "Int-🔬"
+  },
+  "292": {
+    "inputs": {
+      "value": 2
+    },
+    "class_type": "Int-🔬"
+  },
+  "300": {
+    "inputs": {
+      "number": [
+        "290",
+        0
+      ]
+    },
+    "class_type": "Number to Int"
+  },
+  "306": {
+    "inputs": {
+      "noise_seed": 2657923422
+    },
+    "class_type": "RandomNoise"
+  },
+  "307": {
+    "inputs": {
+      "conditioning": [
+        "34",
+        0
+      ],
+      "model": [
+        "26",
+        0
+      ]
+    },
+    "class_type": "BasicGuider"
+  },
+  "308": {
+    "inputs": {
+      "sampler_name": "deis"
+    },
+    "class_type": "KSamplerSelect"
+  },
+  "310": {
+    "inputs": {
+      "scheduler": "beta",
+      "steps": [
+        "313",
+        0
+      ],
+      "denoise": 1,
+      "model": [
+        "26",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler"
+  },
+  "312": {
+    "inputs": {
+      "noise": [
+        "306",
+        0
+      ],
+      "guider": [
+        "307",
+        0
+      ],
+      "sampler": [
+        "308",
+        0
+      ],
+      "sigmas": [
+        "310",
+        0
+      ],
+      "latent_image": [
+        "29",
+        2
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced"
+  },
+  "313": {
+    "inputs": {
+      "value": 20
+    },
+    "class_type": "easy int"
+  },
+  "325": {
+    "inputs": {
+      "MODEL": [
+        "26",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere"
+  },
+  "329": {
+    "inputs": {
+      "image": [
+        "14",
+        0
+      ]
+    },
+    "class_type": "GetImageSize+"
+  },
+  "331": {
+    "inputs": {
+      "image": [
+        "90",
+        1
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "444": {
+    "inputs": {
+      "channel": "red",
+      "image": [
+        "449",
+        0
+      ]
+    },
+    "class_type": "ImageToMask"
+  },
+  "446": {
+    "inputs": {
+      "mask": [
+        "444",
+        0
+      ]
+    },
+    "class_type": "MaskToImage"
+  },
+  "448": {
+    "inputs": {
+      "image": [
+        "14",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "449": {
+    "inputs": {
+      "image": [
+        "198",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "487": {
+    "inputs": {
+      "module": 16,
+      "mode": "manual",
+      "position": "center",
+      "image": [
+        "490",
+        0
+      ]
+    },
+    "class_type": "ml-ImageModuleCrop"
+  },
+  "489": {
+    "inputs": {
+      "smaller_side": 1024,
+      "larger_side": 0,
+      "scale_factor": 0,
+      "upscale_method": "lanczos",
+      "image": [
+        "487",
+        0
+      ]
+    },
+    "class_type": "ml-ResizeImage"
+  },
+  "490": {
+    "inputs": {
+      "image": "",
+      "image_base64": "",
+      "upload": "image"
+    },
+    "class_type": "ml-ImageFromBase64"
+  },
+  "494": {
+    "inputs": {
+      "type": "image",
+      "width": 512,
+      "height": 512,
+      "resolution": "1024x1024 (1.0)",
+      "batch_size": 1,
+      "color": 0,
+      "image": [
+        "511",
+        0
+      ]
+    },
+    "class_type": "ml-NewImage"
+  },
+  "496": {
+    "inputs": {
+      "width": [
+        "500",
+        0
+      ],
+      "height": [
+        "107",
+        1
+      ],
+      "position": "top-left",
+      "x_offset": 0,
+      "y_offset": 0,
+      "image": [
+        "230",
+        0
+      ]
+    },
+    "class_type": "ImageCrop+"
+  },
+  "497": {
+    "inputs": {
+      "images": [
+        "496",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "498": {
+    "inputs": {
+      "value": "a - b",
+      "a": [
+        "108",
+        0
+      ],
+      "b": [
+        "500",
+        0
+      ]
+    },
+    "class_type": "SimpleMath+"
+  },
+  "500": {
+    "inputs": {
+      "image": [
+        "489",
+        0
+      ]
+    },
+    "class_type": "GetImageSize+"
+  },
+  "502": {
+    "inputs": {
+      "inputcount": 3,
+      "direction": "right",
+      "match_image_size": true,
+      "Update inputs": null,
+      "image_1": [
+        "331",
+        0
+      ],
+      "image_2": [
+        "14",
+        0
+      ],
+      "image_3": [
+        "511",
+        0
+      ]
+    },
+    "class_type": "ImageConcatMulti"
+  },
+  "503": {
+    "inputs": {
+      "inputcount": 3,
+      "direction": "right",
+      "match_image_size": true,
+      "Update inputs": null,
+      "image_1": [
+        "103",
+        0
+      ],
+      "image_2": [
+        "446",
+        0
+      ],
+      "image_3": [
+        "494",
+        0
+      ]
+    },
+    "class_type": "ImageConcatMulti"
+  },
+  "504": {
+    "inputs": {
+      "device": "auto",
+      "image": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "BiRefNet"
+  },
+  "510": {
+    "inputs": {
+      "device": "auto",
+      "image": [
+        "489",
+        0
+      ]
+    },
+    "class_type": "BiRefNet"
+  },
+  "511": {
+    "inputs": {
+      "image": [
+        "516",
+        1
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "516": {
+    "inputs": {
+      "margin": [
+        "139",
+        0
+      ],
+      "width": [
+        "329",
+        0
+      ],
+      "height": [
+        "329",
+        1
+      ],
+      "resize_method": "bilinear",
+      "keep_aspect_ratio": true,
+      "color": "black",
+      "image": [
+        "489",
+        0
+      ],
+      "mask": [
+        "510",
+        0
+      ]
+    },
+    "class_type": "ml-MaskToBbox"
+  },
+  "518": {
+    "inputs": {
+      "inputcount": 2,
+      "direction": "right",
+      "match_image_size": true,
+      "Update inputs": null,
+      "image_1": [
+        "331",
+        0
+      ],
+      "image_2": [
+        "14",
+        0
+      ]
+    },
+    "class_type": "ImageConcatMulti"
+  },
+  "519": {
+    "inputs": {
+      "inputcount": 2,
+      "direction": "right",
+      "match_image_size": true,
+      "Update inputs": null,
+      "image_1": [
+        "103",
+        0
+      ],
+      "image_2": [
+        "446",
+        0
+      ]
+    },
+    "class_type": "ImageConcatMulti"
+  },
+  "521": {
+    "inputs": {
+      "select": [
+        "525",
+        0
+      ],
+      "sel_mode": false,
+      "input1": [
+        "502",
+        0
+      ],
+      "input2": [
+        "518",
+        0
+      ]
+    },
+    "class_type": "ImpactSwitch"
+  },
+  "522": {
+    "inputs": {
+      "select": [
+        "525",
+        0
+      ],
+      "sel_mode": false,
+      "input1": [
+        "503",
+        0
+      ],
+      "input2": [
+        "519",
+        0
+      ]
+    },
+    "class_type": "ImpactSwitch"
+  },
+  "523": {
+    "inputs": {
+      "value": true
+    },
+    "class_type": "Bool-🔬"
+  },
+  "524": {
+    "inputs": {
+      "ANY": [
+        "523",
+        0
+      ],
+      "IF_TRUE": [
+        "526",
+        0
+      ],
+      "IF_FALSE": [
+        "527",
+        0
+      ]
+    },
+    "class_type": "If ANY return A else B-🔬"
+  },
+  "525": {
+    "inputs": {
+      "number": [
+        "524",
+        0
+      ]
+    },
+    "class_type": "Number to Int"
+  },
+  "526": {
+    "inputs": {
+      "value": 1
+    },
+    "class_type": "Int-🔬"
+  },
+  "527": {
+    "inputs": {
+      "value": 2
+    },
+    "class_type": "Int-🔬"
+  },
+  "530": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": ".*",
+      "group_regex": "^Ref Image",
+      "INT": [
+        "525",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "547": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": false,
+      "hair": false,
+      "hat": false,
+      "sunglass": false,
+      "left_arm": false,
+      "right_arm": false,
+      "left_leg": false,
+      "right_leg": false,
+      "left_shoe": false,
+      "right_shoe": false,
+      "upper_clothes": true,
+      "skirt": true,
+      "pants": true,
+      "dress": true,
+      "belt": true,
+      "bag": true,
+      "scarf": true
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "548": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "12",
+        0
+      ],
+      "segformer_pipeline": [
+        "547",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "550": {
+    "inputs": {
+      "mask": [
+        "548",
+        1
+      ]
+    },
+    "class_type": "InvertMask"
+  },
+  "551": {
+    "inputs": {
+      "mask": [
+        "550",
+        0
+      ]
+    },
+    "class_type": "MaskToImage"
+  },
+  "554": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": false,
+      "hair": false,
+      "hat": false,
+      "sunglass": false,
+      "left_arm": true,
+      "right_arm": true,
+      "left_leg": true,
+      "right_leg": true,
+      "left_shoe": true,
+      "right_shoe": true,
+      "upper_clothes": true,
+      "skirt": true,
+      "pants": true,
+      "dress": true,
+      "belt": true,
+      "bag": true,
+      "scarf": true
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "555": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "6",
+        0
+      ],
+      "segformer_pipeline": [
+        "554",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "557": {
+    "inputs": {
+      "mask": [
+        "593",
+        0
+      ]
+    },
+    "class_type": "MaskToImage"
+  },
+  "562": {
+    "inputs": {
+      "mode": "raw value",
+      "displaytext": "A stylish red double-breasted coat. The coat is made from a smooth, textured fabric with a vibrant red color. It features a tailored silhouette, wide lapels, and gold-tone buttons that add a touch of elegance. Underneath, the outfit includes a black turtleneck and a black lace-trimmed skirt, creating a layered look. The ensemble is complemented by a black beret adorned with white embellishments. The clothing is presented from a front view, showcasing the full outfit.",
+      "input": [
+        "231",
+        0
+      ]
+    },
+    "class_type": "DisplayAny"
+  },
+  "564": {
+    "inputs": {
+      "conditioning": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut"
+  },
+  "570": {
+    "inputs": {
+      "mask1": [
+        "581",
+        0
+      ],
+      "mask2": [
+        "595",
+        0
+      ]
+    },
+    "class_type": "SubtractMask"
+  },
+  "572": {
+    "inputs": {
+      "iterations": 32,
+      "border": true,
+      "invert": true,
+      "masks": [
+        "555",
+        1
+      ]
+    },
+    "class_type": "ml-ErodeMask"
+  },
+  "581": {
+    "inputs": {
+      "amount": 64,
+      "device": "gpu",
+      "mask": [
+        "572",
+        0
+      ]
+    },
+    "class_type": "MaskBlur+"
+  },
+  "590": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": true,
+      "hair": true,
+      "hat": false,
+      "sunglass": false,
+      "left_arm": false,
+      "right_arm": false,
+      "left_leg": false,
+      "right_leg": false,
+      "left_shoe": false,
+      "right_shoe": false,
+      "upper_clothes": false,
+      "skirt": false,
+      "pants": false,
+      "dress": false,
+      "belt": false,
+      "bag": false,
+      "scarf": false
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "591": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "6",
+        0
+      ],
+      "segformer_pipeline": [
+        "590",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "593": {
+    "inputs": {
+      "mask": [
+        "570",
+        0
+      ]
+    },
+    "class_type": "InvertMask"
+  },
+  "595": {
+    "inputs": {
+      "amount": 11,
+      "device": "gpu",
+      "mask": [
+        "591",
+        1
+      ]
+    },
+    "class_type": "MaskBlur+"
+  }
+}
