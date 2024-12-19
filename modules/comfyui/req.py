@@ -200,7 +200,15 @@ def save_local_images(
 
 
 async def process_image_task(prompt: dict, task_name: str) -> List[str]:
-    """Process a complete image generation task"""
+    """Process a complete image generation task
+    
+    Args:
+        prompt: ComfyUI workflow prompt dictionary
+        task_name: Name of the task for saving outputs
+        
+    Returns:
+        List of saved image paths
+    """
     try:
         # Submit task
         prompt_id, server_url = await queue_prompt(prompt)
@@ -208,14 +216,21 @@ async def process_image_task(prompt: dict, task_name: str) -> List[str]:
         # Get results with retries
         output_images, status = await get_result(prompt_id, server_url=server_url)
         if status != "SUCCESS":
-            logger.error(f"Task failed with status: {status}")
+            logger.error(f"Task {prompt_id} failed with status: {status}")
+            return []
+            
+        if not output_images:
+            logger.warning(f"Task {prompt_id} succeeded but no images were generated")
             return []
 
         # Save images
-        return save_local_images(output_images, task_name)
+        logger.info(f"Saving images for task: {task_name}")
+        saved_paths = save_local_images(output_images, task_name)
+        logger.info(f"Successfully saved {len(saved_paths)} images")
+        return saved_paths
 
     except Exception as e:
-        logger.error(f"Error processing task: {str(e)}")
+        logger.exception(f"Error processing task '{task_name}': {str(e)}")
         return []
 
 
