@@ -12,6 +12,33 @@ from watchdog.observers import Observer
 PREFIX = "renamed_"
 
 
+def resize_image(image_path: str, new_size: int = 1024):
+    """调整成短边1024"""
+
+    image_file = Path(image_path)
+    image = Image.open(image_file)
+
+    # Get current dimensions
+    original_width, original_height = image.size
+
+    # Determine the resizing scale factor
+    scale = min(new_size / original_width, new_size / original_height)
+
+    # Compute new dimensions
+    new_width = int(original_width * scale)
+    new_height = int(original_height * scale)
+
+    # Resize the image
+    resized_image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+
+    # Save the resized image
+    resized_image.save(
+        f"{Path(image_path).parent} / resized_{image_file.name}", quality=95
+    )
+
+    return f"resized_{image_file.name}"
+
+
 def rename_image(
     image_path: str,
 ):
@@ -106,7 +133,6 @@ class MyHandler(FileSystemEventHandler):
             print(f"Directory modified: {event.src_path}")
             # 在这里调用你想要执行的函数
             handle_folder_change(event.src_path)
-        
 
     def on_created(self, event):
         if event.is_directory:
@@ -128,8 +154,9 @@ class MyHandler(FileSystemEventHandler):
 if __name__ == "__main__":
     # rename_image(r"C:\Users\ecpkn\Desktop\NewUI\0_0.png")
 
-    # loop_folder(
-    #     r"C:\Users\ecpkn\Desktop\NewUI",
-    #     handle_image,
-    # )
-    listen_folder(r"C:\Users\ecpkn\Desktop\NewUI")
+    loop_folder(
+        # r"C:\Sample\Curtain\3_curtain",
+        r"C:\Sample\Fashion\yy\Output",
+        handle_image,
+    )
+    # listen_folder(r"C:\Users\ecpkn\Desktop\NewUI")

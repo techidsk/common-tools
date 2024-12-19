@@ -15,6 +15,8 @@ To create a virtual environment:
 
 ```
 uv venv  # Create a virtual environment at `.venv`.
+
+uv venv --python 3.12  # Create a virtual environment at `.venv` with python 3.12.
 ```
 To activate the virtual environment:
 
@@ -26,6 +28,11 @@ source .venv/bin/activate
 ### On Windows.
 ```
 .venv\Scripts\activate
+```
+
+在 powershell 中使用 venv
+```
+.\.venv\Scripts\Activate.ps1
 ```
 
 ### 安装依赖
