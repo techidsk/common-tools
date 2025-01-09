@@ -7,14 +7,19 @@ from loguru import logger
 
 
 class ComfyUIRedisClient:
-    def __init__(self, host: str = "localhost", port: int = 6379, db: int = 0):
+    def __init__(
+        self, host: str = "localhost", port: int = 6379, db: int = 0, password: str = ""
+    ):
         self.redis_url = f"redis://{host}:{port}/{db}"
         self.redis_client: Optional[redis.Redis] = None
+        self.redis_password = password
 
     async def connect(self):
         """Connect to Redis if not already connected"""
         if not self.redis_client:
-            self.redis_client = await redis.from_url(self.redis_url)
+            self.redis_client = await redis.from_url(
+                self.redis_url, password=self.redis_password
+            )
 
     async def close(self):
         """Close Redis connection"""
