@@ -47,7 +47,7 @@ async def main_flow(
 if __name__ == "__main__":
     # 设置部署配置
     deployment_config = {
-        "target_folders": ["C:/Users/molook/Desktop/线稿图"],
+        "target_folders": ["C:/Users/molook/Desktop/diff"],
         "workflow_path": "modules/comfyui/workflows/ktc_0108_v1.json",
         "node_config_path": "modules/comfyui/workflows/ktc_config.json",
         "batch_size": 5,

@@ -12,10 +12,9 @@ import dotenv
 import httpx
 from loguru import logger
 from PIL import Image
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, model_validator
 
 from modules.comfyui.redis_client import ComfyUIRedisClient
-from modules.io.image import load_image_to_base64
 
 # 加载环境变量
 dotenv.load_dotenv()
@@ -279,7 +278,7 @@ class TaskDispatcher:
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 filename = output_filename or f"{timestamp}_{node_id}_{idx}_{str(uuid.uuid4())[:8]}.jpg"
                 if not filename.endswith(".jpg"):
-                    filename = filename + ".jpg"
+                    filename = filename + uuid.uuid4().hex + ".jpg"
                 file_path = output_path / filename
 
                 image = Image.open(io.BytesIO(image_data))
@@ -337,7 +336,7 @@ class TaskDispatcher:
                     return output_images, "SUCCESS"
 
             except Exception as e:
-                logger.error(f"获取结果时出错: {str(e)}")
+                # logger.error(f"获取结果时出错: {str(e)}")
                 if attempt == max_retries - 1:
                     await self.redis_client.set_task_status(
                         prompt_id, "FAILED", {"error": str(e)}
@@ -375,19 +374,40 @@ class TaskDispatcher:
 
     async def queue_prompt_to_server(self, prompt: dict, server: ComfyUIServer) -> str:
         """提交任务到指定的 ComfyUI 服务器"""
-        data = json.dumps({"prompt": prompt}).encode("utf-8")
-        logger.info(f"提交任务到服务器: {server.url}")
+        try:
+            data = json.dumps({"prompt": prompt}).encode("utf-8")
+            logger.info(f"提交任务到服务器: {server.url}")
 
-        async with httpx.AsyncClient() as client:
-            response = await client.post(f"{server.url}/prompt", content=data)
-            result = response.json()
-            prompt_id = result.get("prompt_id")
+            async with httpx.AsyncClient() as client:
+                try:
+                    response = await client.post(f"{server.url}/prompt", content=data)
+                    response.raise_for_status()  # 检查 HTTP 状态码
+                except httpx.HTTPStatusError as e:
+                    logger.error(f"HTTP 请求失败: 状态码 {e.response.status_code}, URL: {server.url}")
+                    raise Exception(f"服务器返回错误状态码: {e.response.status_code}, 响应内容: {e.response.text}")
+                except httpx.RequestError as e:
+                    logger.error(f"请求失败: {str(e)}")
+                    raise Exception(f"无法连接到服务器 {server.url}: {str(e)}")
 
-            if prompt_id:
+                try:
+                    result = response.json()
+                except json.JSONDecodeError as e:
+                    logger.error(f"解析响应 JSON 失败: {str(e)}, 响应内容: {response.text}")
+                    raise Exception(f"服务器返回的响应不是有效的 JSON 格式: {str(e)}")
+
+                prompt_id = result.get("prompt_id")
+                if not prompt_id:
+                    error_msg = f"服务器响应中缺少 prompt_id: {result}"
+                    logger.error(error_msg)
+                    raise Exception(error_msg)
+
                 await self.redis_client.set_task_status(prompt_id, "PENDING")
                 logger.info(f"任务已提交 - ID: {prompt_id}, 服务器: {server.url}")
                 return prompt_id
-            raise Exception("无法从响应中获取 prompt_id")
+
+        except Exception as e:
+            logger.error(f"提交任务到服务器 {server.url} 时发生错误: {str(e)}")
+            raise Exception(f"提交任务失败: {str(e)}") from e
 
     async def _check_servers(self) -> bool:
         """检查服务器状态"""

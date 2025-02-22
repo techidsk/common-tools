@@ -38,6 +38,43 @@ class WorkflowManager:
         self._workflow: Optional[dict] = None
         self._node_config: Optional[Dict[str, NodeConfig]] = None
         self._resize_edge: Optional[int] = None
+        self._input_mapping: Optional[Dict[str, dict]] = None
+
+    def set_input_mapping(self, input_mapping: Dict[str, dict]):
+        """设置输入映射配置"""
+        self._input_mapping = input_mapping
+
+    def prepare_workflow_inputs(self, input_groups: Dict[str, List[Path]]) -> dict:
+        """根据输入映射准备工作流输入参数
+
+        Args:
+            input_groups: 按输入类型分组的图片路径字典，如:
+                {
+                    "reference_image": [Path("style1.jpg"), Path("style2.jpg")],
+                    "model_image": [Path("model1.jpg")]
+                }
+
+        Returns:
+            准备好的工作流输入参数字典
+        """
+        if not self._input_mapping:
+            raise ValueError("未设置输入映射配置")
+
+        # 准备所有输入图片的 base64 数据
+        workflow_inputs = {}
+        for input_type, paths in input_groups.items():
+            if input_type in self._input_mapping:
+                config = self._input_mapping[input_type]
+                # 获取工作流中实际使用的参数名称
+                param_name = config.get("workflow_param", input_type)
+                # 如果只有一张图片，直接使用字符串
+                # 如果有多张图片，使用列表
+                if len(paths) == 1:
+                    workflow_inputs[param_name] = self.prepare_image(paths[0])
+                else:
+                    workflow_inputs[param_name] = [self.prepare_image(p) for p in paths]
+
+        return workflow_inputs
 
     def load_workflow(self) -> dict:
         """加载工作流"""
@@ -130,7 +167,7 @@ class WorkflowManager:
             except ValueError:
                 logger.warning(f"环境变量 RESIZE_SHORT_EDGE 值无效: {env_resize}")
 
-        self._resize_edge = 1536
+        self._resize_edge = 1024
         return self._resize_edge
 
     def prepare_image(self, image_path: Path) -> str:

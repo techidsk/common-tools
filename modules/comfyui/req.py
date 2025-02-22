@@ -11,6 +11,7 @@ import uuid
 from pathlib import Path
 from PIL import Image
 from typing import Dict, List, Tuple, Optional
+from itertools import cycle
 
 import dotenv
 import httpx
@@ -24,39 +25,64 @@ from modules.comfyui.redis_client import ComfyUIRedisClient
 
 dotenv.load_dotenv()
 
-prompt = load_json("modules/comfyui/workflows/1216_v1.json")
-server_address = os.environ.get("COMFYUI_HOST")
-server_port = os.environ.get("COMFYUI_PORT")
+prompt = load_json("modules/comfyui/workflows/1219_v2.json")
+
+# 配置多个服务器地址
+COMFYUI_SERVERS = [
+    {
+        "host": os.environ.get("COMFYUI_HOST"),
+        "port": os.environ.get("COMFYUI_PORT"),
+    }
+]
+
+# 如果环境变量中有其他服务器，添加到列表中
+for i in range(2, 6):  # 支持最多5个服务器
+    host = os.environ.get(f"COMFYUI_HOST_{i}")
+    port = os.environ.get(f"COMFYUI_PORT_{i}")
+    if host and port:
+        COMFYUI_SERVERS.append({"host": host, "port": port})
+
+# 创建服务器URL列表和循环迭代器
+SERVER_URLS = [f"http://{server['host']}:{server['port']}" for server in COMFYUI_SERVERS]
+server_cycle = cycle(SERVER_URLS)
+
 redis_client = ComfyUIRedisClient(
     host=os.environ.get("REDIS_HOST", "localhost"),
     port=int(os.environ.get("REDIS_PORT", 6379)),
     db=int(os.environ.get("REDIS_DB", 0)),
+    password=os.environ.get("REDIS_PASSWORD", ""),
 )
 resize_short_edge = int(os.environ.get("RESIZE_SHORT_EDGE", 1536))
 
 
-async def queue_prompt(prompt: dict) -> str:
-    """Submit a prompt to ComfyUI and return the prompt ID"""
+async def get_next_server() -> str:
+    """获取下一个可用的服务器URL"""
+    return next(server_cycle)
+
+
+async def queue_prompt(prompt: dict) -> tuple[str, str]:
+    """Submit a prompt to ComfyUI and return the prompt ID and server URL"""
+    server_url = await get_next_server()
     p = {"prompt": prompt}
     data = json.dumps(p).encode("utf-8")
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
-            f"http://{server_address}:{server_port}/prompt", content=data
+            f"{server_url}/prompt", content=data
         )
         result = response.json()
         prompt_id = result.get("prompt_id")
 
         if prompt_id:
             await redis_client.set_task_status(prompt_id, "PENDING")
-            logger.info(f"Task submitted with ID: {prompt_id}")
-            return prompt_id
+            logger.info(f"Task submitted with ID: {prompt_id} to server: {server_url}")
+            return prompt_id, server_url
         raise Exception("Failed to get prompt_id from response")
 
 
-async def get_history(prompt_id: str) -> dict:
+async def get_history(prompt_id: str, server_url: str) -> dict:
     """Get task history from ComfyUI"""
-    url = f"http://{server_address}:{server_port}/history/{prompt_id}"
+    url = f"{server_url}/history/{prompt_id}"
     logger.info(url)
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
@@ -73,13 +99,13 @@ async def _get_comfy_image_bytes(image: dict, server_address: str) -> bytes:
     }
 
     async with httpx.AsyncClient(timeout=60) as client:
-        url = f"http://{server_address}/view"
+        url = f"{server_address}/view"
         response = await client.get(url, params=params)
         return response.content
 
 
 async def get_result(
-    prompt_id: str, max_retries: int = 60, retry_delay: int = 5
+    prompt_id: str, max_retries: int = 60, retry_delay: int = 5, server_url: str = ""
 ) -> Tuple[Optional[Dict[str, List[bytes]]], str]:
     """
     Get task result with retries and Redis caching
@@ -90,10 +116,12 @@ async def get_result(
     if task_status and task_status["status"] == "COMPLETED":
         # 如果任务完成，返回图片路径而不是图片数据
         return task_status["image_paths"], "SUCCESS"
-
+    
+    url = f"{server_url}/history/{prompt_id}"
+    logger.info(f'task url: {url}')
     for attempt in range(max_retries):
         try:
-            history = await get_history(prompt_id)
+            history = await get_history(prompt_id, server_url)
             history = history[prompt_id]
 
             if "outputs" not in history:
@@ -110,7 +138,7 @@ async def get_result(
                     for image in node_output["images"]:
                         task = asyncio.ensure_future(
                             _get_comfy_image_bytes(
-                                image, server_address=f"{server_address}:{server_port}"
+                                image, server_address=server_url
                             )
                         )
                         tasks.append((node_id, task))
@@ -175,10 +203,10 @@ async def process_image_task(prompt: dict, task_name: str) -> List[str]:
     """Process a complete image generation task"""
     try:
         # Submit task
-        prompt_id = await queue_prompt(prompt)
+        prompt_id, server_url = await queue_prompt(prompt)
 
         # Get results with retries
-        output_images, status = await get_result(prompt_id)
+        output_images, status = await get_result(prompt_id, server_url=server_url)
         if status != "SUCCESS":
             logger.error(f"Task failed with status: {status}")
             return []
@@ -197,13 +225,19 @@ async def process_image_task(prompt: dict, task_name: str) -> List[str]:
 
 async def single_task(folder: str, changed_file: str):
     folder_name = Path(folder).name
-    folder_path = Path(folder)  # 使用 Path 对象处理路径
+    folder_path = Path(folder)
+    logger.info(folder_name)
 
-    # 使用 Path 对象正确拼接路径
-    prompt["5"]["inputs"]["image_base64"] = load_image_to_base64(
-        str(folder_path / changed_file), resize_short_edge=resize_short_edge
-    )
+    # 模特图
+    model_image_path = folder_path / "模特" / changed_file
+    if model_image_path.exists():
+        prompt["5"]["inputs"]["image_base64"] = load_image_to_base64(
+            str(model_image_path), resize_short_edge=resize_short_edge
+        )
+    else:
+        raise ValueError(f"模特图不存在: {model_image_path}")
 
+    # 参考
     # 检查原图1
     for ext in [".jpg", ".png"]:
         orig1_path = folder_path / f"原图1{ext}"
@@ -228,8 +262,13 @@ async def single_task(folder: str, changed_file: str):
     prompt["306"]["inputs"]["noise_seed"] = randint(1, 1000000)
 
     async def main():
-        saved_paths = await process_image_task(prompt, folder_name)
-        logger.info(f"Saved images: {saved_paths}")
+        # 获取 prompt_id 和对应的 server_url
+        prompt_id, server_url = await queue_prompt(prompt)
+        # 使用对应的 server_url 获取结果
+        output_images, status = await get_result(prompt_id, server_url=server_url)
+        if status == "SUCCESS":
+            saved_paths = save_local_images(output_images, folder_name)
+            logger.info(f"Saved images: {saved_paths}")
         await redis_client.close()
 
     start = time.perf_counter()

@@ -1,0 +1,10 @@
+{
+    "image": {
+        "path": "/10/inputs/image_base64",
+        "value": ""
+    },
+    "seed": {
+        "path": "/30/inputs/noise_seed",
+        "type": ["random", [1, 1000000]]
+    }
+}

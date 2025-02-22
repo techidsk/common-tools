@@ -1,0 +1,23 @@
+{
+  "model_image": {
+      "path": "/5/inputs/image_base64",
+      "value": ""
+  },
+  "reference_image": {
+      "path": "/12/inputs/image_base64",
+      "value": ""
+  },
+  "output_folder": {
+      "path": "/900/inputs/sub_directory",
+      "value": ""
+  },
+  "mode": {
+    "path": "/897/inputs/value",
+    "value": false
+  },
+  "random_seed": {
+    "path": ["/42/inputs/value", "/306/inputs/noise_seed"],
+    "value": null,
+    "type": ["random", [0, 2147483647]]
+  }
+}

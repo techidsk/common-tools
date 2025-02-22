@@ -39,3 +39,18 @@ source .venv/bin/activate
 ```
 uv pip install -r requirements.txt 
 ```
+
+## 模块
+
+### 批量生成模块
+用于 api 批量生成。
+
+分为
+1. 检索器，检索需要处理的素材。
+2. 提示词拼接器。
+3. 分发器，将任务分发到各个节点。
+4. 获取结果，获取各个节点处理结果。
+
+#### TODO
+[ ] 自动开启 autodl
+[ ] 自动拉取判断模型

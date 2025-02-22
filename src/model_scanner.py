@@ -1,3 +1,7 @@
+"""
+通过工作流文件来获取所需要的模型信息，可以通过共享空间拉取模型。
+"""
+
 from enum import Enum
 from pathlib import Path
 from typing import Dict, List, Optional, Set

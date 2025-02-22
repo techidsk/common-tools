@@ -4,6 +4,7 @@ from loguru import logger
 from pydantic import BaseModel, Field
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileCreatedEvent
+import os
 
 
 class FileRetrieverConfig(BaseModel):
@@ -99,42 +100,28 @@ class FileRetriever:
         return False
 
     def scan_folders(self) -> List[Path]:
-        """扫描文件夹，返回新的符合条件的文件列表"""
-        new_files: List[Path] = []
-
-        for target_folder in self.config.target_folders:
-            if not target_folder.exists():
-                logger.warning(f"目标文件夹不存在: {target_folder}")
+        """扫描文件夹获取图片列表"""
+        all_files = []
+        for folder in self.config.target_folders:
+            logger.info(f"处理文件夹: {folder}")
+            if not folder.exists():
                 continue
 
-            # 第一步：收集所有直接子文件夹
-            valid_subfolders = []
-            for subfolder in target_folder.iterdir():
-                if not subfolder.is_dir():
+            # 递归扫描所有子文件夹
+            for root, _, files in os.walk(folder):
+                root_path = Path(root)
+                # 检查是否匹配关键词
+                if self.config.folder_keywords and not any(
+                    keyword in str(root_path) for keyword in self.config.folder_keywords
+                ):
                     continue
-                    
-                if self._is_valid_folder(subfolder):
-                    logger.trace(f"找到符合条件的子文件夹: {subfolder}")
-                    valid_subfolders.append(subfolder)
-                else:
-                    logger.trace(f"跳过不符合条件的子文件夹: {subfolder}")
 
-            # 第二步：在符合条件的子文件夹中处理图片
-            for subfolder in valid_subfolders:
-                logger.info(f"处理文件夹: {subfolder}")
-                # 只处理直接子文件，不递归
-                for file_path in subfolder.glob("*"):
-                    if not file_path.is_file():
-                        continue
+                for file in files:
+                    file_path = root_path / file
+                    if file_path.suffix.lower() in self.config.image_extensions:
+                        all_files.append(file_path)
 
-                    if file_path in self._processed_files:
-                        continue
-
-                    if self._is_valid_image(file_path):
-                        new_files.append(file_path)
-                        self._processed_files.add(file_path)
-
-        return new_files
+        return all_files
 
     def start(self, callback=None):
         """开始检查文件

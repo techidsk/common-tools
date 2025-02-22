@@ -67,15 +67,19 @@ def find_changed_files(target_path: str | Path) -> list[dict]:
     Returns:
         list[dict]: 包含文件信息的列表，每项包含folder和changed_file
     """
-    root_path = Path(target_path)
+    clothes_path = Path(target_path) / "款式"
+    model_path = Path(target_path) / "模特"
 
-    if not root_path.exists() or not root_path.is_dir():
-        raise ValueError(f"Invalid directory path: {target_path}")
+    if not clothes_path.exists() or not clothes_path.is_dir():
+        raise ValueError(f"Invalid directory path: {clothes_path}")
+    
+    if not model_path.exists() or not model_path.is_dir():
+        raise ValueError(f"Invalid directory path: {model_path}")
 
     changed_files_info = []
 
     # 遍历所有子文件夹
-    for folder_path in root_path.iterdir():
+    for folder_path in clothes_path.iterdir():
         if not folder_path.is_dir():
             continue
 
@@ -85,7 +89,8 @@ def find_changed_files(target_path: str | Path) -> list[dict]:
                 continue
 
             file_name = file_path.name
-            if "换装" in file_name:
+            logger.info(file_name)
+            if "正面" in file_name:
                 # 获取不带扩展名的文件名
                 base_name = file_path.stem
                 

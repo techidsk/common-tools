@@ -76,7 +76,7 @@ def loop_folder(
 def convert_image(
     image_path: str,
     target_type: str = "jpeg",
-    quality: int = 90,
+    quality: int = 98,
 ):
     """转换图片格式"""
     try:
@@ -209,7 +209,7 @@ if __name__ == "__main__":
 
     loop_folder(
         # r"C:\Sample\Curtain\3_curtain",
-        r"C:\Sample\Fashion\yy\Output",
+        r"C:\Users\molook\Desktop\yi-0117",
         handle_image,
     )
     # listen_folder(r"C:\Users\ecpkn\Desktop\NewUI")
