@@ -8,6 +8,7 @@ dependencies = [
     "aiohttp>=3.11.12",
     "dpath>=2.2.0",
     "httpx>=0.28.1",
+    "huggingface-hub>=0.29.2",
     "prefect>=3.1.11",
     "pydantic>=2.10.4",
     "python-dotenv>=1.0.1",
