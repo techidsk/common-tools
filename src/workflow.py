@@ -136,6 +136,90 @@ class WorkflowManager:
             for node in config.bypass.get("nodes", []):
                 self._set_node_value(workflow, node["path"], node["value"])
 
+
+    def _set_node_random_seed(self, workflow: dict, config: NodeConfig):
+        """从 workflow 中提取可能的 random seed 节点位置信息，并确保随机性
+        
+        如果在配置中指定了 seed 节点，则会收集所有可能的随机种子节点位置，
+        并在需要时为它们设置随机值。如果需要统一随机种子，可以在配置中单独设置。
+        
+        Args:
+            workflow: 工作流数据
+            config: 当前处理的节点配置
+        """
+        # 检查是否需要处理随机种子
+        if not hasattr(self, "_node_config"):
+            return
+            
+        # 如果当前节点是 seed 节点，则不需要额外处理
+        if config == self._node_config.get("seed"):
+            return
+            
+        # 查找当前节点中的随机种子
+        seed_paths = []
+        
+        # 检查当前节点是否包含 seed 或 noise_seed 输入
+        if isinstance(config.path, str):
+            node_path = config.path.split("/")[0]  # 获取节点名称
+            logger.debug(f"检查节点 {node_path} 的随机种子")
+            
+            # 检查是否有 seed 输入
+            seed_path = f"{node_path}/inputs/seed"
+            current_seed = dpath.get(workflow, seed_path, default=None)
+            if current_seed is not None:
+                seed_paths.append(seed_path)
+                logger.debug(f"找到 seed 路径: {seed_path}, 当前值: {current_seed}")
+                
+            # 检查是否有 noise_seed 输入
+            noise_seed_path = f"{node_path}/inputs/noise_seed"
+            current_noise_seed = dpath.get(workflow, noise_seed_path, default=None)
+            if current_noise_seed is not None:
+                seed_paths.append(noise_seed_path)
+                logger.debug(f"找到 noise_seed 路径: {noise_seed_path}, 当前值: {current_noise_seed}")
+        
+        # 如果找到了随机种子节点，并且没有在 seed 配置中指定，则为它们设置随机值
+        if seed_paths and "seed" not in self._node_config:
+            for path in seed_paths:
+                # 生成一个随机种子值
+                random_seed = random.randint(0, 999999999)
+                # 设置随机种子值
+                dpath.set(workflow, path, random_seed, "/")
+                logger.info(f"设置随机种子: {path} = {random_seed}")
+        
+        # 如果存在 seed 配置，则更新其路径列表
+        if "seed" in self._node_config:
+            seed_config = self._node_config["seed"]
+            seed_list = []
+            
+            if isinstance(seed_config.path, str):
+                seed_list = [seed_config.path]
+            elif isinstance(seed_config.path, list):
+                seed_list = seed_config.path.copy()
+    
+            # 从工作流中提取所有可能的种子节点
+            for k, _ in workflow.items():
+                seed_value = dpath.get(workflow, f"{k}/inputs/seed", default=None)
+                if seed_value is not None:
+                    seed_list.append(f"{k}/inputs/seed")
+                    logger.debug(f"收集到 seed 路径: {k}/inputs/seed, 当前值: {seed_value}")
+    
+                noise_seed_value = dpath.get(workflow, f"{k}/inputs/noise_seed", default=None)
+                if noise_seed_value is not None:
+                    seed_list.append(f"{k}/inputs/noise_seed")
+                    logger.debug(f"收集到 noise_seed 路径: {k}/inputs/noise_seed, 当前值: {noise_seed_value}")
+    
+            # 去重
+            seed_list = list(set(seed_list))
+            logger.debug(f"更新 seed 配置路径列表: {seed_list}")
+            
+            # 更新配置中的路径
+            seed_config.path = seed_list
+            
+            # 如果种子类型为空，则创建随机种子类型
+            if not seed_config.type:
+                seed_config.type = ["random", [0, 999999999]]
+                logger.debug("创建随机种子类型配置")
+
     def prepare_workflow(self, **kwargs) -> dict:
         """准备工作流
 
@@ -151,6 +235,8 @@ class WorkflowManager:
         for key, config in self._node_config.items():
             if isinstance(config, NodeConfig):
                 self._process_node_config(workflow, key, config, **kwargs)
+
+        # self._set_node_random_seed(workflow)
 
         return workflow
 
