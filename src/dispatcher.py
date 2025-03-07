@@ -282,7 +282,7 @@ class TaskDispatcher:
                 file_path = output_path / filename
 
                 image = Image.open(io.BytesIO(image_data))
-                image.save(file_path, format="PNG")
+                image.save(file_path, format="JPEG", quality=100)
                 saved_paths.append(str(file_path))
                 logger.info(f"图片已保存: {file_path}")
 
@@ -292,7 +292,7 @@ class TaskDispatcher:
         self,
         prompt_id: str,
         server: ComfyUIServer,
-        max_retries: int = 60,
+        max_retries: int = 200,
         retry_delay: int = 5,
     ) -> Tuple[Optional[Dict[str, List[bytes]]], str]:
         """获取任务结果"""
