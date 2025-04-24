@@ -1,0 +1,10 @@
+{
+  "model_image": {
+    "path": "/790/inputs/image_base64",
+    "value": ""
+  },
+  "reference_image": {
+    "path": "/469/inputs/image_base64",
+    "value": ""
+  }
+}

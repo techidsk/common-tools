@@ -1,0 +1,22 @@
+{
+  "model_image": {
+    "path": "/790/inputs/image_base64",
+    "value": ""
+  },
+  "reference_image": {
+    "path": "/469/inputs/image_base64",
+    "value": ""
+  },
+  "aspect_ratio": {
+    "path": "/732/inputs/aspect_ratio",
+    "value": "3:4 portrait 896x1152"
+  },
+  "target_width": {
+    "path": "/1024/inputs/width",
+    "value": "1500"
+  },
+  "target_height": {
+    "path": "/1024/inputs/height",
+    "value": "2000"
+  }
+}

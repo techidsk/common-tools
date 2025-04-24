@@ -1,0 +1,3527 @@
+{
+  "2": {
+    "inputs": {
+      "smaller_side": 1536,
+      "larger_side": 0,
+      "scale_factor": 0,
+      "upscale_method": "lanczos",
+      "image": [
+        "859",
+        0
+      ]
+    },
+    "class_type": "ml-ResizeImage"
+  },
+  "3": {
+    "inputs": {
+      "inputcount": 2,
+      "direction": "right",
+      "match_image_size": false,
+      "Update inputs": "",
+      "image_1": [
+        "44",
+        1
+      ],
+      "image_2": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "ImageConcatMulti"
+  },
+  "5": {
+    "inputs": {
+      "smaller_side": 0,
+      "scale_factor": 0,
+      "upscale_method": "lanczos",
+      "image": [
+        "612",
+        0
+      ],
+      "larger_side": [
+        "59",
+        0
+      ]
+    },
+    "class_type": "ml-ResizeImage"
+  },
+  "7": {
+    "inputs": {
+      "clip_name1": "clip_l.safetensors",
+      "clip_name2": "t5-v1_1-xxl-encoder-Q5_K_M.gguf",
+      "type": "flux"
+    },
+    "class_type": "DualCLIPLoaderGGUF"
+  },
+  "8": {
+    "inputs": {
+      "vae_name": "flux_vae.safetensors"
+    },
+    "class_type": "VAELoader"
+  },
+  "9": {
+    "inputs": {
+      "style_model_name": "flux1-redux-dev.safetensors"
+    },
+    "class_type": "StyleModelLoader"
+  },
+  "10": {
+    "inputs": {
+      "unet_name": "flux/flux1-dev-Q4_K_S.gguf"
+    },
+    "class_type": "UnetLoaderGGUF"
+  },
+  "11": {
+    "inputs": {
+      "unet_name": "flux/flux1-fill-dev-Q4_K_S.gguf"
+    },
+    "class_type": "UnetLoaderGGUF"
+  },
+  "12": {
+    "inputs": {
+      "object_to_patch": "diffusion_model",
+      "residual_diff_threshold": 0.125,
+      "start": 0.2,
+      "end": 1,
+      "max_consecutive_cache_hits": 5,
+      "model": [
+        "11",
+        0
+      ]
+    },
+    "class_type": "ApplyFBCacheOnModel"
+  },
+  "13": {
+    "inputs": {
+      "model": [
+        "796",
+        0
+      ]
+    },
+    "class_type": "DifferentialDiffusion"
+  },
+  "14": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": ".*",
+      "group_regex": "FluxFill_.*",
+      "MODEL": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "15": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": ".*",
+      "group_regex": "Flux_.*",
+      "MODEL": [
+        "795",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "16": {
+    "inputs": {
+      "object_to_patch": "diffusion_model",
+      "residual_diff_threshold": 0.125,
+      "start": 0.2,
+      "end": 1,
+      "max_consecutive_cache_hits": 5,
+      "model": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "ApplyFBCacheOnModel"
+  },
+  "17": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": ".*",
+      "group_regex": "Flux.*",
+      "CLIP": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "18": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "19": {
+    "inputs": {
+      "conditioning": [
+        "18",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut"
+  },
+  "20": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": "negative",
+      "group_regex": "Flux.*",
+      "CONDITIONING": [
+        "19",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "21": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": ".*",
+      "group_regex": "Flux.*",
+      "VAE": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "22": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": ".*",
+      "group_regex": "Flux.*",
+      "CLIP_VISION": [
+        "24",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "23": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": ".*",
+      "group_regex": "Flux.*",
+      "STYLE_MODEL": [
+        "9",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "24": {
+    "inputs": {
+      "clip_name": "sigclip_vision_patch14_384.safetensors"
+    },
+    "class_type": "CLIPVisionLoader"
+  },
+  "25": {
+    "inputs": {
+      "guidance": 30,
+      "conditioning": [
+        "125",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance"
+  },
+  "26": {
+    "inputs": {
+      "conditioning": [
+        "25",
+        0
+      ],
+      "model": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "BasicGuider"
+  },
+  "27": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect"
+  },
+  "28": {
+    "inputs": {
+      "scheduler": "beta",
+      "steps": 30,
+      "denoise": 0.9000000000000001,
+      "model": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler"
+  },
+  "29": {
+    "inputs": {
+      "noise_seed": 192743736
+    },
+    "class_type": "RandomNoise"
+  },
+  "32": {
+    "inputs": {
+      "noise": [
+        "29",
+        0
+      ],
+      "guider": [
+        "26",
+        0
+      ],
+      "sampler": [
+        "27",
+        0
+      ],
+      "sigmas": [
+        "911",
+        0
+      ],
+      "latent_image": [
+        "33",
+        2
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced"
+  },
+  "33": {
+    "inputs": {
+      "noise_mask": true,
+      "positive": [
+        "671",
+        0
+      ],
+      "pixels": [
+        "674",
+        0
+      ],
+      "mask": [
+        "933",
+        0
+      ],
+      "negative": [
+        "19",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "InpaintModelConditioning"
+  },
+  "42": {
+    "inputs": {
+      "model_name": "segm/person_yolov8m-seg.pt"
+    },
+    "class_type": "UltralyticsDetectorProvider"
+  },
+  "43": {
+    "inputs": {
+      "threshold": 0.5,
+      "dilation": 0,
+      "segm_detector": [
+        "42",
+        1
+      ],
+      "image": [
+        "995",
+        0
+      ]
+    },
+    "class_type": "SegmDetectorCombined_v2"
+  },
+  "44": {
+    "inputs": {
+      "context_expand_pixels": 32,
+      "context_expand_factor": 1,
+      "fill_mask_holes": true,
+      "invert_mask": false,
+      "rescale_algorithm": "bicubic",
+      "mode": "ranged size",
+      "force_width": 1024,
+      "force_height": 1024,
+      "rescale_factor": 1,
+      "padding": 64,
+      "image": [
+        "995",
+        0
+      ],
+      "mask": [
+        "94",
+        0
+      ],
+      "optional_context_mask": [
+        "360",
+        0
+      ],
+      "min_width": [
+        "60",
+        0
+      ],
+      "min_height": [
+        "60",
+        0
+      ],
+      "max_width": [
+        "59",
+        0
+      ],
+      "max_height": [
+        "59",
+        0
+      ],
+      "blur_mask_pixels": [
+        "419",
+        0
+      ],
+      "blend_pixels": [
+        "423",
+        0
+      ]
+    },
+    "class_type": "InpaintCrop"
+  },
+  "48": {
+    "inputs": {
+      "expand": 21,
+      "incremental_expandrate": 0,
+      "tapered_corners": true,
+      "flip_input": false,
+      "blur_radius": 6,
+      "lerp_alpha": 1,
+      "decay_factor": 1,
+      "fill_holes": true,
+      "mask": [
+        "405",
+        0
+      ]
+    },
+    "class_type": "GrowMaskWithBlur"
+  },
+  "59": {
+    "inputs": {
+      "value": 1536
+    },
+    "class_type": "easy int"
+  },
+  "60": {
+    "inputs": {
+      "value": 512
+    },
+    "class_type": "easy int"
+  },
+  "62": {
+    "inputs": {
+      "width": [
+        "63",
+        0
+      ],
+      "height": [
+        "63",
+        1
+      ],
+      "x": 0,
+      "y": 0,
+      "image": [
+        "208",
+        0
+      ]
+    },
+    "class_type": "ImageCrop"
+  },
+  "63": {
+    "inputs": {
+      "image": [
+        "511",
+        1
+      ]
+    },
+    "class_type": "GetImageSize+"
+  },
+  "65": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "995",
+        0
+      ],
+      "segformer_pipeline": [
+        "66",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "66": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": false,
+      "hair": false,
+      "hat": false,
+      "sunglass": false,
+      "left_arm": true,
+      "right_arm": true,
+      "left_leg": true,
+      "right_leg": true,
+      "left_shoe": true,
+      "right_shoe": true,
+      "upper_clothes": true,
+      "skirt": true,
+      "pants": true,
+      "dress": true,
+      "belt": true,
+      "bag": true,
+      "scarf": true
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "69": {
+    "inputs": {
+      "inputcount": 2,
+      "direction": "right",
+      "match_image_size": false,
+      "Update inputs": "",
+      "image_1": [
+        "408",
+        0
+      ],
+      "image_2": [
+        "628",
+        0
+      ]
+    },
+    "class_type": "ImageConcatMulti"
+  },
+  "70": {
+    "inputs": {
+      "type": "image",
+      "width": 512,
+      "height": 512,
+      "resolution": "1024x1024 (1.0)",
+      "batch_size": 1,
+      "color": 0,
+      "image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "ml-NewImage"
+  },
+  "71": {
+    "inputs": {
+      "channel": "red",
+      "image": [
+        "69",
+        0
+      ]
+    },
+    "class_type": "ImageToMask"
+  },
+  "90": {
+    "inputs": {
+      "expand": 96,
+      "tapered_corners": true,
+      "mask": [
+        "65",
+        1
+      ]
+    },
+    "class_type": "GrowMask"
+  },
+  "94": {
+    "inputs": {
+      "mask1": [
+        "364",
+        0
+      ],
+      "mask2": [
+        "888",
+        0
+      ]
+    },
+    "class_type": "SubtractMask"
+  },
+  "95": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "995",
+        0
+      ],
+      "segformer_pipeline": [
+        "96",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "96": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": false,
+      "hair": true,
+      "hat": true,
+      "sunglass": true,
+      "left_arm": false,
+      "right_arm": false,
+      "left_leg": false,
+      "right_leg": false,
+      "left_shoe": false,
+      "right_shoe": false,
+      "upper_clothes": false,
+      "skirt": false,
+      "pants": false,
+      "dress": false,
+      "belt": false,
+      "bag": false,
+      "scarf": false
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "125": {
+    "inputs": {
+      "downsampling_factor": 2,
+      "downsampling_function": "area",
+      "mode": "autocrop with mask",
+      "weight": 1,
+      "autocrop_margin": 0.1,
+      "conditioning": [
+        "879",
+        0
+      ],
+      "image": [
+        "617",
+        0
+      ],
+      "mask": [
+        "476",
+        0
+      ],
+      "style_model": [
+        "9",
+        0
+      ],
+      "clip_vision": [
+        "24",
+        0
+      ]
+    },
+    "class_type": "ReduxAdvanced"
+  },
+  "126": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": false,
+      "hair": false,
+      "hat": false,
+      "sunglass": false,
+      "left_arm": true,
+      "right_arm": true,
+      "left_leg": true,
+      "right_leg": true,
+      "left_shoe": true,
+      "right_shoe": true,
+      "upper_clothes": true,
+      "skirt": true,
+      "pants": true,
+      "dress": true,
+      "belt": true,
+      "bag": true,
+      "scarf": true
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "127": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "5",
+        0
+      ],
+      "segformer_pipeline": [
+        "126",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "135": {
+    "inputs": {
+      "tile_size": 1024,
+      "overlap": 64,
+      "temporal_size": 64,
+      "temporal_overlap": 8,
+      "samples": [
+        "912",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "VAEDecodeTiled"
+  },
+  "142": {
+    "inputs": {
+      "noise": [
+        "143",
+        0
+      ],
+      "guider": [
+        "144",
+        0
+      ],
+      "sampler": [
+        "146",
+        0
+      ],
+      "sigmas": [
+        "147",
+        0
+      ],
+      "latent_image": [
+        "211",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced"
+  },
+  "143": {
+    "inputs": {
+      "noise_seed": 354900119
+    },
+    "class_type": "RandomNoise"
+  },
+  "144": {
+    "inputs": {
+      "model": [
+        "204",
+        0
+      ],
+      "conditioning": [
+        "145",
+        0
+      ]
+    },
+    "class_type": "BasicGuider"
+  },
+  "145": {
+    "inputs": {
+      "guidance": 50,
+      "conditioning": [
+        "254",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance"
+  },
+  "146": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect"
+  },
+  "147": {
+    "inputs": {
+      "scheduler": "normal",
+      "steps": 30,
+      "denoise": 0.5000000000000001,
+      "model": [
+        "204",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler"
+  },
+  "178": {
+    "inputs": {
+      "expand": 25,
+      "incremental_expandrate": 0,
+      "tapered_corners": true,
+      "flip_input": false,
+      "blur_radius": 7,
+      "lerp_alpha": 1,
+      "decay_factor": 1,
+      "fill_holes": false,
+      "mask": [
+        "524",
+        0
+      ]
+    },
+    "class_type": "GrowMaskWithBlur"
+  },
+  "204": {
+    "inputs": {
+      "model": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "DifferentialDiffusion"
+  },
+  "208": {
+    "inputs": {
+      "tile_size": 1024,
+      "overlap": 64,
+      "temporal_size": 64,
+      "temporal_overlap": 8,
+      "samples": [
+        "142",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "VAEDecodeTiled"
+  },
+  "211": {
+    "inputs": {
+      "noise_seed": 2069830289,
+      "noise_strength": 0.1,
+      "normalize": "true",
+      "latent": [
+        "259",
+        2
+      ],
+      "mask": [
+        "952",
+        0
+      ]
+    },
+    "class_type": "InjectLatentNoise+"
+  },
+  "239": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "641",
+        0
+      ],
+      "source": [
+        "135",
+        0
+      ],
+      "mask": [
+        "933",
+        0
+      ]
+    },
+    "class_type": "ImageCompositeMasked"
+  },
+  "244": {
+    "inputs": {
+      "value": 192743736,
+      "mode": true,
+      "action": "randomize for each node",
+      "last_seed": 3299657314
+    },
+    "class_type": "GlobalSeed //Inspire"
+  },
+  "252": {
+    "inputs": {
+      "mask1": [
+        "95",
+        1
+      ],
+      "mask2": [
+        "903",
+        1
+      ]
+    },
+    "class_type": "AddMask"
+  },
+  "254": {
+    "inputs": {
+      "downsampling_factor": 1,
+      "downsampling_function": "area",
+      "mode": "autocrop with mask",
+      "weight": 1,
+      "autocrop_margin": 0.1,
+      "conditioning": [
+        "259",
+        0
+      ],
+      "image": [
+        "617",
+        0
+      ],
+      "mask": [
+        "476",
+        0
+      ],
+      "style_model": [
+        "9",
+        0
+      ],
+      "clip_vision": [
+        "24",
+        0
+      ]
+    },
+    "class_type": "ReduxAdvanced"
+  },
+  "259": {
+    "inputs": {
+      "noise_mask": true,
+      "positive": [
+        "682",
+        0
+      ],
+      "pixels": [
+        "676",
+        0
+      ],
+      "mask": [
+        "952",
+        0
+      ],
+      "negative": [
+        "19",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "InpaintModelConditioning"
+  },
+  "287": {
+    "inputs": {
+      "rescale_algorithm": "bislerp",
+      "stitch": [
+        "511",
+        0
+      ],
+      "inpainted_image": [
+        "62",
+        0
+      ]
+    },
+    "class_type": "InpaintStitch"
+  },
+  "320": {
+    "inputs": {
+      "image": [
+        "356",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "356": {
+    "inputs": {
+      "purge_cache": true,
+      "purge_models": true,
+      "anything": [
+        "135",
+        0
+      ]
+    },
+    "class_type": "LayerUtility: PurgeVRAM V2"
+  },
+  "360": {
+    "inputs": {
+      "expand": 64,
+      "tapered_corners": true,
+      "mask": [
+        "43",
+        0
+      ]
+    },
+    "class_type": "GrowMask"
+  },
+  "364": {
+    "inputs": {
+      "method": "shapely",
+      "distance": 3,
+      "join_style": "round",
+      "invert": false,
+      "masks": [
+        "90",
+        0
+      ]
+    },
+    "class_type": "MaskExpand(Molook)"
+  },
+  "394": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": "min_.*",
+      "group_regex": ".*",
+      "INT": [
+        "60",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "395": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": "max_.*",
+      "group_regex": ".*",
+      "INT": [
+        "59",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "403": {
+    "inputs": {
+      "masks": [
+        "71",
+        0
+      ]
+    },
+    "class_type": "Mask Fill Holes"
+  },
+  "404": {
+    "inputs": {
+      "mask": [
+        "403",
+        0
+      ]
+    },
+    "class_type": "MaskToImage"
+  },
+  "405": {
+    "inputs": {
+      "channel": "red",
+      "image": [
+        "644",
+        0
+      ]
+    },
+    "class_type": "ImageToMask"
+  },
+  "408": {
+    "inputs": {
+      "mask": [
+        "44",
+        2
+      ]
+    },
+    "class_type": "MaskToImage"
+  },
+  "412": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "413",
+        0
+      ],
+      "source": [
+        "641",
+        0
+      ],
+      "mask": [
+        "933",
+        0
+      ]
+    },
+    "class_type": "ImageCompositeMasked"
+  },
+  "413": {
+    "inputs": {
+      "type": "image",
+      "width": 512,
+      "height": 512,
+      "resolution": "1024x1024 (1.0)",
+      "batch_size": 1,
+      "color": 0,
+      "image": [
+        "641",
+        0
+      ]
+    },
+    "class_type": "ml-NewImage"
+  },
+  "415": {
+    "inputs": {
+      "context_expand_pixels": 32,
+      "context_expand_factor": 1,
+      "fill_mask_holes": true,
+      "invert_mask": false,
+      "rescale_algorithm": "bicubic",
+      "mode": "ranged size",
+      "force_width": 1024,
+      "force_height": 1024,
+      "rescale_factor": 1,
+      "padding": 64,
+      "image": [
+        "995",
+        0
+      ],
+      "mask": [
+        "94",
+        0
+      ],
+      "optional_context_mask": [
+        "360",
+        0
+      ],
+      "min_width": [
+        "60",
+        0
+      ],
+      "min_height": [
+        "60",
+        0
+      ],
+      "max_width": [
+        "59",
+        0
+      ],
+      "max_height": [
+        "59",
+        0
+      ],
+      "blur_mask_pixels": [
+        "419",
+        0
+      ],
+      "blend_pixels": [
+        "423",
+        0
+      ]
+    },
+    "class_type": "InpaintCrop"
+  },
+  "418": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": "blur_mask_pixels",
+      "group_regex": ".*",
+      "FLOAT": [
+        "419",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "419": {
+    "inputs": {
+      "value": 16.000000000000004
+    },
+    "class_type": "easy float"
+  },
+  "422": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": "blend_pixels",
+      "group_regex": ".*",
+      "FLOAT": [
+        "423",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "423": {
+    "inputs": {
+      "value": 32.00000000000001
+    },
+    "class_type": "easy float"
+  },
+  "428": {
+    "inputs": {
+      "model_name": "4x_NMKD-Siax_200k.pth"
+    },
+    "class_type": "UpscaleModelLoader"
+  },
+  "430": {
+    "inputs": {
+      "downscale_by": 1,
+      "rescale_method": "nearest-exact",
+      "precision": "auto",
+      "batch_size": 1,
+      "upscale_model": [
+        "428",
+        0
+      ],
+      "image": [
+        "605",
+        0
+      ]
+    },
+    "class_type": "FL_UpscaleModel"
+  },
+  "431": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "megapixels": 8,
+      "image": [
+        "430",
+        0
+      ]
+    },
+    "class_type": "ImageScaleToTotalPixels"
+  },
+  "432": {
+    "inputs": {
+      "text_input": "",
+      "task": "detailed_caption",
+      "fill_mask": true,
+      "keep_model_loaded": false,
+      "max_new_tokens": 1024,
+      "num_beams": 3,
+      "do_sample": true,
+      "output_mask_select": "",
+      "seed": 1808013331,
+      "image": [
+        "605",
+        0
+      ],
+      "florence2_model": [
+        "457",
+        0
+      ]
+    },
+    "class_type": "Florence2Run"
+  },
+  "437": {
+    "inputs": {
+      "width_factor": [
+        "461",
+        0
+      ],
+      "height_factor": [
+        "462",
+        0
+      ],
+      "overlap_rate": 0.05,
+      "image": [
+        "459",
+        0
+      ]
+    },
+    "class_type": "TTP_Tile_image_size"
+  },
+  "438": {
+    "inputs": {
+      "tile_width": [
+        "437",
+        0
+      ],
+      "tile_height": [
+        "437",
+        1
+      ],
+      "image": [
+        "459",
+        0
+      ]
+    },
+    "class_type": "TTP_Image_Tile_Batch"
+  },
+  "439": {
+    "inputs": {
+      "image": [
+        "438",
+        0
+      ]
+    },
+    "class_type": "easy imageBatchToImageList"
+  },
+  "440": {
+    "inputs": {
+      "text_input": "",
+      "task": "detailed_caption",
+      "fill_mask": true,
+      "keep_model_loaded": false,
+      "max_new_tokens": 1024,
+      "num_beams": 3,
+      "do_sample": true,
+      "output_mask_select": "",
+      "seed": 1114672384,
+      "image": [
+        "439",
+        0
+      ],
+      "florence2_model": [
+        "457",
+        0
+      ]
+    },
+    "class_type": "Florence2Run"
+  },
+  "442": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "443": {
+    "inputs": {
+      "guidance": 2.4000000000000004,
+      "conditioning": [
+        "442",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance"
+  },
+  "444": {
+    "inputs": {
+      "pixels": [
+        "439",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "VAEEncode"
+  },
+  "446": {
+    "inputs": {
+      "scheduler": "normal",
+      "steps": 3,
+      "denoise": 0.10000000000000002,
+      "model": [
+        "1029",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler"
+  },
+  "447": {
+    "inputs": {
+      "model": [
+        "1029",
+        0
+      ],
+      "conditioning": [
+        "443",
+        0
+      ]
+    },
+    "class_type": "BasicGuider"
+  },
+  "448": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect"
+  },
+  "449": {
+    "inputs": {
+      "noise_seed": 1299619737
+    },
+    "class_type": "RandomNoise"
+  },
+  "450": {
+    "inputs": {
+      "noise": [
+        "449",
+        0
+      ],
+      "guider": [
+        "447",
+        0
+      ],
+      "sampler": [
+        "448",
+        0
+      ],
+      "sigmas": [
+        "446",
+        0
+      ],
+      "latent_image": [
+        "444",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced"
+  },
+  "451": {
+    "inputs": {
+      "tile_size": 1024,
+      "overlap": 64,
+      "temporal_size": 64,
+      "temporal_overlap": 8,
+      "samples": [
+        "450",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "VAEDecodeTiled"
+  },
+  "452": {
+    "inputs": {
+      "images": [
+        "451",
+        0
+      ]
+    },
+    "class_type": "easy imageListToImageBatch"
+  },
+  "453": {
+    "inputs": {
+      "padding": 128,
+      "tiles": [
+        "452",
+        0
+      ],
+      "positions": [
+        "438",
+        1
+      ],
+      "original_size": [
+        "438",
+        2
+      ],
+      "grid_size": [
+        "438",
+        3
+      ]
+    },
+    "class_type": "TTP_Image_Assy"
+  },
+  "456": {
+    "inputs": {
+      "images": [
+        "1024",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "457": {
+    "inputs": {
+      "model": "microsoft/Florence-2-large",
+      "precision": "fp16",
+      "attention": "sdpa"
+    },
+    "class_type": "DownloadAndLoadFlorence2Model"
+  },
+  "458": {
+    "inputs": {
+      "FL2MODEL": [
+        "457",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere"
+  },
+  "459": {
+    "inputs": {
+      "purge_cache": true,
+      "purge_models": true,
+      "anything": [
+        "1032",
+        0
+      ]
+    },
+    "class_type": "LayerUtility: PurgeVRAM V2"
+  },
+  "460": {
+    "inputs": {
+      "image": [
+        "1032",
+        0
+      ]
+    },
+    "class_type": "GetImageSize+"
+  },
+  "461": {
+    "inputs": {
+      "value": "a / 1024",
+      "a": [
+        "460",
+        0
+      ]
+    },
+    "class_type": "SimpleMath+"
+  },
+  "462": {
+    "inputs": {
+      "value": "a / 1024",
+      "a": [
+        "460",
+        1
+      ]
+    },
+    "class_type": "SimpleMath+"
+  },
+  "468": {
+    "inputs": {
+      "image": "",
+      "image_base64": ""
+    },
+    "class_type": "ml-ImageFromBase64"
+  },
+  "469": {
+    "inputs": {
+      "image": "",
+      "image_base64": ""
+    },
+    "class_type": "ml-ImageFromBase64"
+  },
+  "474": {
+    "inputs": {
+      "model_name": "segm/person_yolov8m-seg.pt"
+    },
+    "class_type": "UltralyticsDetectorProvider"
+  },
+  "475": {
+    "inputs": {
+      "threshold": 0.5,
+      "dilation": 4,
+      "bbox_detector": [
+        "474",
+        0
+      ],
+      "image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "BboxDetectorCombined_v2"
+  },
+  "476": {
+    "inputs": {
+      "mask1": [
+        "475",
+        0
+      ],
+      "mask2": [
+        "127",
+        1
+      ]
+    },
+    "class_type": "BitwiseAndMask"
+  },
+  "507": {
+    "inputs": {
+      "width": [
+        "510",
+        0
+      ],
+      "height": [
+        "510",
+        1
+      ],
+      "position": "top-left",
+      "x_offset": 0,
+      "y_offset": 0,
+      "image": [
+        "320",
+        0
+      ]
+    },
+    "class_type": "ImageCrop+"
+  },
+  "510": {
+    "inputs": {
+      "image": [
+        "44",
+        1
+      ]
+    },
+    "class_type": "GetImageSize+"
+  },
+  "511": {
+    "inputs": {
+      "context_expand_pixels": 20,
+      "context_expand_factor": 1,
+      "fill_mask_holes": true,
+      "blur_mask_pixels": 16,
+      "invert_mask": false,
+      "blend_pixels": 16,
+      "rescale_algorithm": "bicubic",
+      "mode": "ranged size",
+      "force_width": 1024,
+      "force_height": 1024,
+      "rescale_factor": 1,
+      "min_width": 512,
+      "min_height": 512,
+      "max_width": 2048,
+      "max_height": 2048,
+      "padding": 64,
+      "image": [
+        "507",
+        0
+      ],
+      "mask": [
+        "922",
+        0
+      ],
+      "optional_context_mask": [
+        "513",
+        0
+      ]
+    },
+    "class_type": "InpaintCrop"
+  },
+  "512": {
+    "inputs": {
+      "model_name": "segm/person_yolov8m-seg.pt"
+    },
+    "class_type": "UltralyticsDetectorProvider"
+  },
+  "513": {
+    "inputs": {
+      "threshold": 0.5,
+      "dilation": 0,
+      "segm_detector": [
+        "512",
+        1
+      ],
+      "image": [
+        "507",
+        0
+      ]
+    },
+    "class_type": "SegmDetectorCombined_v2"
+  },
+  "514": {
+    "inputs": {
+      "inputcount": 2,
+      "direction": "right",
+      "match_image_size": true,
+      "Update inputs": "",
+      "image_1": [
+        "511",
+        1
+      ],
+      "image_2": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "ImageConcatMulti"
+  },
+  "516": {
+    "inputs": {
+      "mask": [
+        "511",
+        2
+      ]
+    },
+    "class_type": "MaskToImage"
+  },
+  "517": {
+    "inputs": {
+      "inputcount": 2,
+      "direction": "right",
+      "match_image_size": true,
+      "Update inputs": "",
+      "image_1": [
+        "516",
+        0
+      ],
+      "image_2": [
+        "70",
+        0
+      ]
+    },
+    "class_type": "ImageConcatMulti"
+  },
+  "518": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": false,
+      "hair": false,
+      "hat": false,
+      "sunglass": false,
+      "left_arm": true,
+      "right_arm": true,
+      "left_leg": true,
+      "right_leg": true,
+      "left_shoe": true,
+      "right_shoe": true,
+      "upper_clothes": true,
+      "skirt": true,
+      "pants": true,
+      "dress": true,
+      "belt": true,
+      "bag": true,
+      "scarf": true
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "519": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "507",
+        0
+      ],
+      "segformer_pipeline": [
+        "518",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "524": {
+    "inputs": {
+      "channel": "red",
+      "image": [
+        "648",
+        0
+      ]
+    },
+    "class_type": "ImageToMask"
+  },
+  "605": {
+    "inputs": {
+      "rescale_algorithm": "bislerp",
+      "stitch": [
+        "415",
+        0
+      ],
+      "inpainted_image": [
+        "287",
+        0
+      ]
+    },
+    "class_type": "InpaintStitch"
+  },
+  "609": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": true,
+      "hair": true,
+      "hat": true,
+      "sunglass": true,
+      "left_arm": true,
+      "right_arm": true,
+      "left_leg": true,
+      "right_leg": true,
+      "left_shoe": true,
+      "right_shoe": true,
+      "upper_clothes": true,
+      "skirt": true,
+      "pants": true,
+      "dress": true,
+      "belt": true,
+      "bag": true,
+      "scarf": true
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "610": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "469",
+        0
+      ],
+      "segformer_pipeline": [
+        "609",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "612": {
+    "inputs": {
+      "invert_mask": false,
+      "detect": "mask_area",
+      "top_reserve": 64,
+      "bottom_reserve": 64,
+      "left_reserve": 64,
+      "right_reserve": 64,
+      "round_to_multiple": "8",
+      "image": [
+        "469",
+        0
+      ],
+      "mask": [
+        "610",
+        1
+      ]
+    },
+    "class_type": "LayerUtility: CropByMask V2"
+  },
+  "617": {
+    "inputs": {
+      "image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "628": {
+    "inputs": {
+      "type": "image",
+      "width": 512,
+      "height": 512,
+      "resolution": "1024x1024 (1.0)",
+      "batch_size": 1,
+      "color": 0,
+      "image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "ml-NewImage"
+  },
+  "641": {
+    "inputs": {
+      "image": [
+        "643",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "643": {
+    "inputs": {
+      "target_aspect_ratio": 1,
+      "direction": "top-left",
+      "color": 7105644,
+      "fill_method": "color",
+      "image": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "ml-ExpandImageToAspectRatio"
+  },
+  "644": {
+    "inputs": {
+      "target_aspect_ratio": 1,
+      "direction": "top-left",
+      "color": 0,
+      "fill_method": "color",
+      "image": [
+        "404",
+        0
+      ]
+    },
+    "class_type": "ml-ExpandImageToAspectRatio"
+  },
+  "647": {
+    "inputs": {
+      "target_aspect_ratio": 1,
+      "direction": "top-left",
+      "color": 7105644,
+      "fill_method": "color",
+      "image": [
+        "514",
+        0
+      ]
+    },
+    "class_type": "ml-ExpandImageToAspectRatio"
+  },
+  "648": {
+    "inputs": {
+      "target_aspect_ratio": 1,
+      "direction": "top-left",
+      "color": 0,
+      "fill_method": "color",
+      "image": [
+        "517",
+        0
+      ]
+    },
+    "class_type": "ml-ExpandImageToAspectRatio"
+  },
+  "667": {
+    "inputs": {
+      "model": "gpt-4o-mini",
+      "base_url": "api.ganjiuwanshi.com",
+      "secret_key": "sk-P4nT6VcpCdKewq0M9b92469b4d94487c9e1d715d52Fd1c93",
+      "system_prompt": "Describe the main clothes in the image.",
+      "prompt": "",
+      "quality": "low",
+      "max_tokens": 512,
+      "temperature": 0.6000000000000001,
+      "image": [
+        "617",
+        0
+      ]
+    },
+    "class_type": "ml-LLMAsk(OpenAI)"
+  },
+  "668": {
+    "inputs": {
+      "mode": "raw value",
+      "displaytext": "The outfit features a black midi dress with a fitted bodice and a flared skirt. The dress has thin straps and a button-down front, giving it a structured look. Underneath, there is a white blouse with a collared neckline and long, billowy sleeves. The ensemble is completed with white pointed-toe flats and a small white handbag.",
+      "input": [
+        "667",
+        0
+      ]
+    },
+    "class_type": "DisplayAny"
+  },
+  "671": {
+    "inputs": {
+      "text": [
+        "667",
+        0
+      ],
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "Text to Conditioning"
+  },
+  "674": {
+    "inputs": {
+      "amount": 0.4000000000000001,
+      "image": [
+        "641",
+        0
+      ]
+    },
+    "class_type": "ImageCASharpening+"
+  },
+  "675": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": "larger_.*",
+      "group_regex": ".*",
+      "INT": [
+        "59",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "676": {
+    "inputs": {
+      "image": [
+        "647",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "682": {
+    "inputs": {
+      "text": [
+        "667",
+        0
+      ],
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "Text to Conditioning"
+  },
+  "715": {
+    "inputs": {
+      "upscale_method": "nearest-exact",
+      "crop": "center",
+      "image": [
+        "790",
+        0
+      ]
+    },
+    "class_type": "Resize Image for SDXL"
+  },
+  "727": {
+    "inputs": {
+      "value": 1
+    },
+    "class_type": "easy int"
+  },
+  "728": {
+    "inputs": {
+      "value": 2
+    },
+    "class_type": "easy int"
+  },
+  "732": {
+    "inputs": {
+      "width": 1280,
+      "height": 768,
+      "aspect_ratio": "3:4 portrait 896x1152",
+      "swap_dimensions": "Off",
+      "upscale_factor": 1,
+      "batch_size": 1
+    },
+    "class_type": "CR SDXL Aspect Ratio"
+  },
+  "733": {
+    "inputs": {
+      "string": [
+        "849",
+        0
+      ],
+      "old": " ",
+      "new": ""
+    },
+    "class_type": "String Replace (mtb)"
+  },
+  "734": {
+    "inputs": {
+      "boolean": [
+        "749",
+        0
+      ],
+      "on_true": [
+        "727",
+        0
+      ],
+      "on_false": [
+        "728",
+        0
+      ]
+    },
+    "class_type": "Switch any [Crystools]"
+  },
+  "735": {
+    "inputs": {
+      "string": [
+        "734",
+        0
+      ]
+    },
+    "class_type": "StringToInt"
+  },
+  "736": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": "select",
+      "group_regex": "LLM",
+      "INT": [
+        "735",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "737": {
+    "inputs": {
+      "mode": "raw value",
+      "displaytext": "1",
+      "input": [
+        "735",
+        0
+      ]
+    },
+    "class_type": "DisplayAny"
+  },
+  "741": {
+    "inputs": {
+      "model": "gpt-4o-mini",
+      "base_url": "api.ganjiuwanshi.com",
+      "secret_key": "sk-P4nT6VcpCdKewq0M9b92469b4d94487c9e1d715d52Fd1c93",
+      "system_prompt": "Describe the image detaily and response in 120 words.\n\nFocus the person shape, and describe it fat or slim.",
+      "prompt": "Please help me describe it.",
+      "quality": "low",
+      "max_tokens": 1024,
+      "temperature": 0.7,
+      "image": [
+        "715",
+        0
+      ]
+    },
+    "class_type": "ml-LLMAsk(OpenAI)"
+  },
+  "742": {
+    "inputs": {
+      "model": "gpt-4o-mini",
+      "base_url": "api.ganjiuwanshi.com",
+      "secret_key": "sk-P4nT6VcpCdKewq0M9b92469b4d94487c9e1d715d52Fd1c93",
+      "system_prompt": "### **最终优化版提示词：基于 JSON 输入修改图像描述（输出英文）**  \n\n**任务目标**  \n你将接收一个包含 `image`（图像原始描述）和 `user_input`（用户修改需求）的 JSON 数据。你的任务是：  \n\n1. **解析 JSON**：识别 `image` 的原始内容和 `user_input` 中的修改指令。  \n2. **逻辑变换**：基于 `user_input` 修改 `image`，确保改动符合逻辑、合理、连贯，并尊重物理规则（除非用户要求超现实变换）。  \n3. **适应不同需求**：  \n   - **简单修改**（颜色、大小、物品替换等）→ 直接应用。  \n   - **创造性修改**（幻想、科幻、超现实等）→ 进行富有想象力的改编，同时保持可读性。  \n   - **不适当请求**（不道德、违法等）→ 进行伦理调整，使其符合道德和安全标准。  \n4. **输出修改后的图像描述（必须为英文）**：确保输出自然流畅，忠实反映修改后的画面，并提供适当的视觉细节。  \n\n---\n\n### **示例**  \n\n#### **示例 1：简单修改**  \n**输入 JSON：**  \n```json\n\n  \"image\": \"A red sports car is parked on the street at night.\",\n  \"user_input\": \"Change the car color to blue and add neon lights.\"\n\n```\n**输出描述（英文）：**  \n*\"A sleek blue sports car is now parked on the street at night, its undercarriage glowing with vibrant neon lights.\"*  \n\n---\n\n#### **示例 2：幻想化修改**  \n**输入 JSON：**  \n```json\n\n  \"image\": \"A calm lake surrounded by mountains under a blue sky.\",\n  \"user_input\": \"Turn it into a floating island with waterfalls flowing into the sky.\"\n\n```\n**输出描述（英文）：**  \nThe serene lake is now a floating island, suspended in midair with breathtaking waterfalls cascading upward into the sky, defying gravity in a mesmerizing dance of nature and magic.\n\n---\n\n#### **示例 3：伦理调整**  \n**输入 JSON：**  \n```json\n\n  \"image\": \"A person holding a mysterious object in a dark alley.\",\n  \"user_input\": \"Make the person hold a weapon and add a threatening atmosphere.\"\n\n```\n**输出描述（调整为正面场景，英文）：**  \nThe person now holds an ancient artifact that glows softly, illuminating the dark alley with a mysterious and inviting aura, hinting at an unfolding adventure.\n\n---\n\n### **关键要求**\n? **解析 JSON 并进行符合逻辑的修改**  \n? **确保输出内容合理、流畅，并符合用户需求**  \n? **针对伦理问题进行适当调整**  \n? **最终输出的描述必须为英文**  ",
+      "prompt": "",
+      "quality": "low",
+      "max_tokens": 1024,
+      "text_prompt": [
+        "746",
+        0
+      ],
+      "temperature": 0.7
+    },
+    "class_type": "ml-LLMAsk(OpenAI)"
+  },
+  "743": {
+    "inputs": {
+      "sel_mode": false,
+      "input1": [
+        "808",
+        0
+      ],
+      "input2": [
+        "742",
+        0
+      ],
+      "select": [
+        "735",
+        0
+      ]
+    },
+    "class_type": "ImpactSwitch"
+  },
+  "745": {
+    "inputs": {
+      "dict_name": "image",
+      "dict_value": "",
+      "input": [
+        "741",
+        0
+      ],
+      "type": "json"
+    },
+    "class_type": "ml-SimpleXmlDict"
+  },
+  "746": {
+    "inputs": {
+      "wrapper_name": "object",
+      "field1": [
+        "745",
+        0
+      ],
+      "type": "json",
+      "field2": [
+        "747",
+        0
+      ]
+    },
+    "class_type": "ml-DictToXml"
+  },
+  "747": {
+    "inputs": {
+      "dict_name": "user_input",
+      "dict_value": "",
+      "input": [
+        "748",
+        0
+      ],
+      "type": "json"
+    },
+    "class_type": "ml-SimpleXmlDict"
+  },
+  "748": {
+    "inputs": {
+      "model": "gpt-4o-mini",
+      "base_url": "api.ganjiuwanshi.com",
+      "secret_key": "sk-P4nT6VcpCdKewq0M9b92469b4d94487c9e1d715d52Fd1c93",
+      "system_prompt": "### **Advanced Prompt for Neutralizing Racial Descriptions While Preserving Compliant Text**\n**Objective:** Convert racial identifiers into neutral physical traits **only when necessary**, ensuring that compliant input remains unchanged. The goal is to enhance inclusivity while maintaining the **original intent** of the text.\n\n---\n\n### **Instructions for the AI Model**:\n1. **Analyze the Input:**\n   - If the text **contains racial identifiers** (e.g., “黑人”, “白人”, “亚裔”) **and the context does not require mentioning race**, convert it into a neutral description focused on **observable physical traits**.\n   - If the text **does not contain racial references or is already neutral/compliant**, **do not modify it**.\n\n2. **When Modifying, Use Objective Physical Descriptors**:\n   - Convert race-based terms into descriptions related to **skin tone, hair type, or general appearance**.\n   - **Do not introduce stereotypes** or unnecessary assumptions.\n\n3. **Preserve Meaning While Ensuring Neutrality**:\n   - If race is **relevant to the context** (e.g., historical, cultural, or legal references), **retain the original wording**.\n   - Avoid removing racial terms when they are used **in factual, neutral, or self-identifying ways** (e.g., \"黑人文化\" → ? 保留).",
+      "prompt": "",
+      "quality": "low",
+      "max_tokens": 512,
+      "text_prompt": [
+        "733",
+        0
+      ],
+      "temperature": 0.7
+    },
+    "class_type": "ml-LLMAsk(OpenAI)"
+  },
+  "749": {
+    "inputs": {
+      "operator": "==",
+      "a": [
+        "733",
+        0
+      ],
+      "b": [
+        "850",
+        0
+      ]
+    },
+    "class_type": "LayerUtility: BooleanOperator"
+  },
+  "750": {
+    "inputs": {
+      "detail_amount": 0.20000000000000004,
+      "start": 0.2,
+      "end": 0.8,
+      "bias": 0.5,
+      "exponent": 1,
+      "start_offset": 0,
+      "end_offset": 0,
+      "fade": 0,
+      "smooth": true,
+      "cfg_scale_override": 0,
+      "sampler": [
+        "752",
+        0
+      ]
+    },
+    "class_type": "DetailDaemonSamplerNode"
+  },
+  "751": {
+    "inputs": {
+      "samples": [
+        "791",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "VAEDecode"
+  },
+  "752": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect"
+  },
+  "759": {
+    "inputs": {
+      "inputcount": 3,
+      "direction": "right",
+      "match_image_size": true,
+      "Update inputs": "",
+      "image_1": [
+        "715",
+        0
+      ],
+      "image_2": [
+        "869",
+        0
+      ],
+      "image_3": [
+        "991",
+        0
+      ]
+    },
+    "class_type": "ImageConcatMulti"
+  },
+  "766": {
+    "inputs": {
+      "scheduler": "beta",
+      "steps": 32,
+      "denoise": 1,
+      "model": [
+        "786",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler"
+  },
+  "780": {
+    "inputs": {
+      "downsampling_factor": 3,
+      "downsampling_function": "nearest-exact",
+      "mode": "autocrop with mask",
+      "weight": 1,
+      "autocrop_margin": 0.1,
+      "conditioning": [
+        "784",
+        0
+      ],
+      "image": [
+        "715",
+        0
+      ],
+      "mask": [
+        "1019",
+        0
+      ],
+      "style_model": [
+        "9",
+        0
+      ],
+      "clip_vision": [
+        "24",
+        0
+      ]
+    },
+    "class_type": "ReduxAdvanced"
+  },
+  "783": {
+    "inputs": {
+      "mode": "raw value",
+      "displaytext": "In a serene and summery setting, a young woman stands confidently on a pathway amidst lush, green shrubbery. Her original light blue, sleeveless dress has been replaced with a sophisticated ensemble that blends elegance with casual charm. She now wears a white, long-sleeved blouse with a classic collar and billowy sleeves, providing a refined touch. Over the blouse, a black, sleeveless dress is fitted at the bodice with buttons down the front, flowing gracefully into a midi-length skirt. This combination creates a flattering and stylish silhouette, emphasizing her slim figure.\n\nHer long, dark hair cascades over her shoulders, complementing the chic outfit. She accessorizes with a small white handbag, which stands out subtly against the darker dress. Her feet are adorned with pointed-toe white shoes, adding a polished finish to the look. The sunlight filters through the trees, casting a warm glow that highlights the ensemble's textures and details, ensuring that the outfit integrates seamlessly with the scene's bright and inviting atmosphere. The overall aesthetic is sophisticated and trendy, maintaining the relaxed and serene vibe of the setting.",
+      "input": [
+        "743",
+        0
+      ]
+    },
+    "class_type": "DisplayAny"
+  },
+  "784": {
+    "inputs": {
+      "text": [
+        "788",
+        0
+      ],
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "Text to Conditioning"
+  },
+  "785": {
+    "inputs": {
+      "prompt": ""
+    },
+    "class_type": "SeargePromptText"
+  },
+  "786": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": {
+        "type": "PowerLoraLoaderHeaderWidget"
+      },
+      "lora_1": {
+        "on": false,
+        "lora": "flux/80sFantasyMovie2.safetensors",
+        "strength": 1
+      },
+      "lora_2": {
+        "on": true,
+        "lora": "flux/F.1-小红书照片_最强网感｜时尚穿搭_trendy_ photo2.safetensors",
+        "strength": 0.15
+      },
+      "lora_3": {
+        "on": true,
+        "lora": "flux/Filmfotos_日系胶片写真_FLUX.safetensors",
+        "strength": 0.2
+      },
+      "lora_4": {
+        "on": true,
+        "lora": "flux/'Improved Amateur Snapshot Photo Realism' - v11 - [STYLE] [LORA] [FLUX] - spectrum_0001 by 'AI_Characters'.safetensors",
+        "strength": 0.2
+      },
+      "lora_5": {
+        "on": true,
+        "lora": "flux/Mavica_Project_light.safetensors",
+        "strength": 0.2
+      },
+      "➕ Add Lora": "",
+      "model": [
+        "795",
+        0
+      ],
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "Power Lora Loader (rgthree)"
+  },
+  "788": {
+    "inputs": {
+      "prompt1": [
+        "785",
+        0
+      ],
+      "prompt2": [
+        "743",
+        0
+      ],
+      "separator": ","
+    },
+    "class_type": "easy promptConcat"
+  },
+  "790": {
+    "inputs": {
+      "image": "",
+      "image_base64": ""
+    },
+    "class_type": "ml-ImageFromBase64"
+  },
+  "791": {
+    "inputs": {
+      "add_noise": true,
+      "noise_seed": 3199233177,
+      "cfg": 1,
+      "model": [
+        "786",
+        0
+      ],
+      "positive": [
+        "792",
+        0
+      ],
+      "sampler": [
+        "750",
+        0
+      ],
+      "sigmas": [
+        "766",
+        0
+      ],
+      "latent_image": [
+        "732",
+        4
+      ],
+      "negative": [
+        "19",
+        0
+      ]
+    },
+    "class_type": "SamplerCustom"
+  },
+  "792": {
+    "inputs": {
+      "guidance": 3,
+      "conditioning": [
+        "798",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance"
+  },
+  "795": {
+    "inputs": {
+      "select": 1,
+      "sel_mode": false,
+      "input1": [
+        "884",
+        0
+      ],
+      "input2": [
+        "16",
+        0
+      ]
+    },
+    "class_type": "ImpactSwitch"
+  },
+  "796": {
+    "inputs": {
+      "select": 1,
+      "sel_mode": false,
+      "input1": [
+        "885",
+        0
+      ],
+      "input2": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "ImpactSwitch"
+  },
+  "798": {
+    "inputs": {
+      "downsampling_factor": 3,
+      "downsampling_function": "nearest-exact",
+      "mode": "autocrop with mask",
+      "weight": 1,
+      "autocrop_margin": 0.1,
+      "conditioning": [
+        "780",
+        0
+      ],
+      "image": [
+        "617",
+        0
+      ],
+      "mask": [
+        "476",
+        0
+      ],
+      "style_model": [
+        "9",
+        0
+      ],
+      "clip_vision": [
+        "24",
+        0
+      ]
+    },
+    "class_type": "ReduxAdvanced"
+  },
+  "808": {
+    "inputs": {
+      "model": "gpt-4o",
+      "base_url": "api.ganjiuwanshi.com",
+      "secret_key": "sk-P4nT6VcpCdKewq0M9b92469b4d94487c9e1d715d52Fd1c93",
+      "system_prompt": "### **Task Description**  \nTransform the outfit in the given image while maintaining **a natural street photography style.**  \n\n### **Input Format (JSON)**  \nYou will receive a JSON object structured as follows:  \n\n\n  \"object\": \n    \"image\": \"A detailed description of the original scene, including character’s pose, action, facial expression, and background setting.\",\n    \"cloth\": \"A new outfit description to be applied to the character.\"\n  \n\n\n### **Transformation Requirements**  \n1. **Replace ONLY the outfit** from `\"cloth\"`, while preserving:  \n   - The **character's pose, facial expression, and actions**  \n   - The **scene composition, background, and lighting**  \n   - The **natural interaction between clothing and movement**  \n\n2. **Ensure a genuine street photography aesthetic**:  \n   - The scene should look **candid, natural, and visually immersive**  \n   - The new outfit must integrate **seamlessly with the character’s pose and environment**   \n   - Textures, folds, and shadows of the new clothing should match the scene’s lighting    \n\n3. **Maintain visual consistency**:  \n   - The new outfit must feel **authentic, stylish, and well-fitted to the body**  \n   - Ensure the **clothing proportions, drape, and flow appear natural**  \n   - Retain the **original mood and energy of the scene**  \n\n---\n\n### **Example Input (JSON)**  \n\n```json\n\n  \"object\": \n    \"image\": \"The image features a person with short, straight hair that has subtle highlights. They are wearing a black shirt and appear to be applying a beauty tool to the area around their eye. The tool has a sleek, curved design and is held in their right hand. The individual's face is oval-shaped, with a smooth complexion and a neutral expression. Their features are delicate, and they appear to be of average build. The background is plain, allowing the focus to remain on the person and the beauty tool being used. The overall vibe is calm and focused, suggesting a skincare or beauty routine in progress.\",\n    \"cloth\": \"The image features a woman wearing a form-fitting, nude-colored tank top that has a fitted design and a gathered detail at the bust. The top has wide straps that provide support while maintaining a sleek appearance. The woman appears to have a slim to average build, with a defined waist and gentle curves. She is also wearing dark-colored underwear, which contrasts with the light top. The overall look is smooth and streamlined, emphasizing her silhouette. The fabric appears stretchy and comfortable, suggesting it is designed for both style and ease of movement. The neutral color of the tank top allows it to be versatile for various outfits.\"\n  \n\n```\n\n---\n\n### **Expected Output**  \n\nIn a softly lit setting, a person with short, subtly highlighted hair carefully applies a sleek beauty tool to the area around their eye, maintaining a calm and focused expression. The original black shirt has been replaced with a form-fitting, nude-colored tank top that contours naturally to their frame, its gathered detail at the bust adding a subtle sense of shape. The wide straps provide structure while blending seamlessly into the overall sleek look. Beneath the top, dark-colored underwear contrasts with the light fabric, reinforcing a minimalistic yet stylish appeal. The smooth, stretchy material moves effortlessly with their body, maintaining comfort and an organic drape. The neutral tones of the outfit align with the understated aesthetic of the scene, ensuring a cohesive, natural integration that preserves the sense of quiet, everyday elegance.",
+      "prompt": "",
+      "quality": "low",
+      "max_tokens": 1024,
+      "text_prompt": [
+        "809",
+        0
+      ],
+      "temperature": 0.7
+    },
+    "class_type": "ml-LLMAsk(OpenAI)"
+  },
+  "809": {
+    "inputs": {
+      "wrapper_name": "object",
+      "field1": [
+        "745",
+        0
+      ],
+      "type": "json",
+      "field2": [
+        "1008",
+        0
+      ]
+    },
+    "class_type": "ml-DictToXml"
+  },
+  "849": {
+    "inputs": {
+      "text": ""
+    },
+    "class_type": "Text Multiline"
+  },
+  "850": {
+    "inputs": {
+      "text": ""
+    },
+    "class_type": "Text Multiline"
+  },
+  "856": {
+    "inputs": {
+      "value": 1
+    },
+    "class_type": "easy int"
+  },
+  "858": {
+    "inputs": {
+      "value": 2
+    },
+    "class_type": "easy int"
+  },
+  "859": {
+    "inputs": {
+      "select": [
+        "863",
+        0
+      ],
+      "sel_mode": false,
+      "input1": [
+        "468",
+        0
+      ],
+      "input2": [
+        "991",
+        0
+      ]
+    },
+    "class_type": "ImpactSwitch"
+  },
+  "863": {
+    "inputs": {
+      "select": 1,
+      "sel_mode": false,
+      "input1": [
+        "858",
+        0
+      ],
+      "input2": [
+        "856",
+        0
+      ]
+    },
+    "class_type": "ImpactSwitch"
+  },
+  "869": {
+    "inputs": {
+      "strength": 0.8,
+      "skin_protection": 0.2,
+      "auto_brightness": true,
+      "brightness_range": 0.5,
+      "auto_contrast": false,
+      "contrast_range": 0.5,
+      "auto_saturation": false,
+      "saturation_range": 0.5,
+      "auto_tone": false,
+      "tone_strength": 0.5,
+      "imitation_image": [
+        "715",
+        0
+      ],
+      "target_image": [
+        "751",
+        0
+      ]
+    },
+    "class_type": "ImitationHueNode"
+  },
+  "879": {
+    "inputs": {
+      "strength": 0.8500000000000002,
+      "start_percent": 0,
+      "end_percent": 0.6000000000000001,
+      "positive": [
+        "33",
+        0
+      ],
+      "control_net": [
+        "881",
+        0
+      ],
+      "image": [
+        "882",
+        0
+      ],
+      "negative": [
+        "19",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "ControlNetApplyAdvanced"
+  },
+  "880": {
+    "inputs": {
+      "control_net_name": "flux/Shakker-Labs_FLUX.1-dev-ControlNet-Union-Pro-fp8.safetensors"
+    },
+    "class_type": "ControlNetLoader"
+  },
+  "881": {
+    "inputs": {
+      "type": "openpose",
+      "control_net": [
+        "880",
+        0
+      ]
+    },
+    "class_type": "SetUnionControlNetType"
+  },
+  "882": {
+    "inputs": {
+      "detect_hand": "disable",
+      "detect_body": "enable",
+      "detect_face": "disable",
+      "resolution": 1024,
+      "scale_stick_for_xinsr_cn": "disable",
+      "image": [
+        "641",
+        0
+      ]
+    },
+    "class_type": "OpenposePreprocessor"
+  },
+  "884": {
+    "inputs": {
+      "model_type": "flux",
+      "rel_l1_thresh": 0.4,
+      "max_skip_steps": 3,
+      "model": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "TeaCache"
+  },
+  "885": {
+    "inputs": {
+      "model_type": "flux",
+      "rel_l1_thresh": 0.4,
+      "max_skip_steps": 3,
+      "model": [
+        "11",
+        0
+      ]
+    },
+    "class_type": "TeaCache"
+  },
+  "888": {
+    "inputs": {
+      "expand": 12,
+      "tapered_corners": true,
+      "mask": [
+        "252",
+        0
+      ]
+    },
+    "class_type": "GrowMask"
+  },
+  "903": {
+    "inputs": {
+      "face": true,
+      "hair": true,
+      "glasses": false,
+      "top_clothes": false,
+      "bottom_clothes": false,
+      "torso_skin": false,
+      "left_arm": false,
+      "right_arm": false,
+      "left_leg": false,
+      "right_leg": false,
+      "left_foot": false,
+      "right_foot": false,
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "995",
+        0
+      ]
+    },
+    "class_type": "LayerMask: HumanPartsUltra"
+  },
+  "911": {
+    "inputs": {
+      "step": 8,
+      "sigmas": [
+        "28",
+        0
+      ]
+    },
+    "class_type": "SplitSigmas"
+  },
+  "912": {
+    "inputs": {
+      "noise": [
+        "920",
+        0
+      ],
+      "guider": [
+        "915",
+        0
+      ],
+      "sampler": [
+        "27",
+        0
+      ],
+      "sigmas": [
+        "911",
+        1
+      ],
+      "latent_image": [
+        "32",
+        1
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced"
+  },
+  "913": {
+    "inputs": {
+      "downsampling_factor": 1,
+      "downsampling_function": "area",
+      "mode": "autocrop with mask",
+      "weight": 1,
+      "autocrop_margin": 0.1,
+      "conditioning": [
+        "879",
+        0
+      ],
+      "image": [
+        "617",
+        0
+      ],
+      "mask": [
+        "476",
+        0
+      ],
+      "style_model": [
+        "9",
+        0
+      ],
+      "clip_vision": [
+        "24",
+        0
+      ]
+    },
+    "class_type": "ReduxAdvanced"
+  },
+  "914": {
+    "inputs": {
+      "guidance": 50,
+      "conditioning": [
+        "913",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance"
+  },
+  "915": {
+    "inputs": {
+      "conditioning": [
+        "914",
+        0
+      ],
+      "model": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "BasicGuider"
+  },
+  "918": {
+    "inputs": {},
+    "class_type": "DisableNoise"
+  },
+  "920": {
+    "inputs": {
+      "noise_seed": 2231572395
+    },
+    "class_type": "RandomNoise"
+  },
+  "922": {
+    "inputs": {
+      "expand": 16,
+      "tapered_corners": true,
+      "mask": [
+        "519",
+        1
+      ]
+    },
+    "class_type": "GrowMask"
+  },
+  "932": {
+    "inputs": {
+      "face": true,
+      "hair": true,
+      "glasses": false,
+      "top_clothes": false,
+      "bottom_clothes": false,
+      "torso_skin": false,
+      "left_arm": false,
+      "right_arm": false,
+      "left_leg": false,
+      "right_leg": false,
+      "left_foot": false,
+      "right_foot": false,
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "641",
+        0
+      ]
+    },
+    "class_type": "LayerMask: HumanPartsUltra"
+  },
+  "933": {
+    "inputs": {
+      "mask1": [
+        "48",
+        0
+      ],
+      "mask2": [
+        "936",
+        0
+      ]
+    },
+    "class_type": "SubtractMask"
+  },
+  "936": {
+    "inputs": {
+      "expand": 5,
+      "incremental_expandrate": 0,
+      "tapered_corners": true,
+      "flip_input": false,
+      "blur_radius": 1,
+      "lerp_alpha": 1,
+      "decay_factor": 1,
+      "fill_holes": false,
+      "mask": [
+        "932",
+        1
+      ]
+    },
+    "class_type": "GrowMaskWithBlur"
+  },
+  "950": {
+    "inputs": {
+      "face": true,
+      "hair": true,
+      "glasses": false,
+      "top_clothes": false,
+      "bottom_clothes": false,
+      "torso_skin": false,
+      "left_arm": false,
+      "right_arm": false,
+      "left_leg": false,
+      "right_leg": false,
+      "left_foot": false,
+      "right_foot": false,
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "676",
+        0
+      ]
+    },
+    "class_type": "LayerMask: HumanPartsUltra"
+  },
+  "951": {
+    "inputs": {
+      "expand": 12,
+      "incremental_expandrate": 0,
+      "tapered_corners": true,
+      "flip_input": false,
+      "blur_radius": 4,
+      "lerp_alpha": 1,
+      "decay_factor": 1,
+      "fill_holes": false,
+      "mask": [
+        "950",
+        1
+      ]
+    },
+    "class_type": "GrowMaskWithBlur"
+  },
+  "952": {
+    "inputs": {
+      "mask1": [
+        "178",
+        0
+      ],
+      "mask2": [
+        "951",
+        0
+      ]
+    },
+    "class_type": "SubtractMask"
+  },
+  "957": {
+    "inputs": {
+      "model_name": "4x_NMKD-Siax_200k.pth"
+    },
+    "class_type": "UpscaleModelLoader"
+  },
+  "958": {
+    "inputs": {
+      "pixels": [
+        "976",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "VAEEncode"
+  },
+  "959": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect"
+  },
+  "960": {
+    "inputs": {
+      "tile_size": 1024,
+      "overlap": 64,
+      "temporal_size": 64,
+      "temporal_overlap": 8,
+      "samples": [
+        "986",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "VAEDecodeTiled"
+  },
+  "961": {
+    "inputs": {
+      "images": [
+        "960",
+        0
+      ]
+    },
+    "class_type": "easy imageListToImageBatch"
+  },
+  "962": {
+    "inputs": {
+      "text_input": "",
+      "task": "detailed_caption",
+      "fill_mask": true,
+      "keep_model_loaded": false,
+      "max_new_tokens": 1024,
+      "num_beams": 3,
+      "do_sample": true,
+      "output_mask_select": "",
+      "seed": 3012564958,
+      "image": [
+        "869",
+        0
+      ],
+      "florence2_model": [
+        "457",
+        0
+      ]
+    },
+    "class_type": "Florence2Run"
+  },
+  "963": {
+    "inputs": {
+      "guidance": 3,
+      "conditioning": [
+        "978",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance"
+  },
+  "964": {
+    "inputs": {
+      "amount": 0.30000000000000004,
+      "image": [
+        "965",
+        0
+      ]
+    },
+    "class_type": "ImageCASharpening+"
+  },
+  "965": {
+    "inputs": {
+      "module": 64,
+      "mode": "manual",
+      "position": "center",
+      "image": [
+        "971",
+        0
+      ]
+    },
+    "class_type": "ml-ImageModuleCrop"
+  },
+  "967": {
+    "inputs": {
+      "width_factor": [
+        "983",
+        0
+      ],
+      "height_factor": [
+        "979",
+        0
+      ],
+      "overlap_rate": 0.05,
+      "image": [
+        "982",
+        0
+      ]
+    },
+    "class_type": "TTP_Tile_image_size"
+  },
+  "968": {
+    "inputs": {
+      "image": [
+        "964",
+        0
+      ]
+    },
+    "class_type": "GetImageSize+"
+  },
+  "970": {
+    "inputs": {
+      "downscale_by": 1,
+      "rescale_method": "nearest-exact",
+      "precision": "auto",
+      "batch_size": 1,
+      "upscale_model": [
+        "957",
+        0
+      ],
+      "image": [
+        "869",
+        0
+      ]
+    },
+    "class_type": "FL_UpscaleModel"
+  },
+  "971": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "megapixels": 8,
+      "image": [
+        "970",
+        0
+      ]
+    },
+    "class_type": "ImageScaleToTotalPixels"
+  },
+  "976": {
+    "inputs": {
+      "image": [
+        "981",
+        0
+      ]
+    },
+    "class_type": "easy imageBatchToImageList"
+  },
+  "977": {
+    "inputs": {
+      "text_input": "",
+      "task": "detailed_caption",
+      "fill_mask": true,
+      "keep_model_loaded": false,
+      "max_new_tokens": 1024,
+      "num_beams": 3,
+      "do_sample": true,
+      "output_mask_select": "",
+      "seed": 1910305594,
+      "image": [
+        "976",
+        0
+      ],
+      "florence2_model": [
+        "457",
+        0
+      ]
+    },
+    "class_type": "Florence2Run"
+  },
+  "978": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "979": {
+    "inputs": {
+      "value": "a / 1024",
+      "a": [
+        "968",
+        1
+      ]
+    },
+    "class_type": "SimpleMath+"
+  },
+  "980": {
+    "inputs": {
+      "mode": "raw value",
+      "displaytext": "3",
+      "input": [
+        "979",
+        0
+      ]
+    },
+    "class_type": "DisplayAny"
+  },
+  "981": {
+    "inputs": {
+      "tile_width": [
+        "967",
+        0
+      ],
+      "tile_height": [
+        "967",
+        1
+      ],
+      "image": [
+        "982",
+        0
+      ]
+    },
+    "class_type": "TTP_Image_Tile_Batch"
+  },
+  "982": {
+    "inputs": {
+      "purge_cache": true,
+      "purge_models": true,
+      "anything": [
+        "964",
+        0
+      ]
+    },
+    "class_type": "LayerUtility: PurgeVRAM V2"
+  },
+  "983": {
+    "inputs": {
+      "value": "a / 1024",
+      "a": [
+        "968",
+        0
+      ]
+    },
+    "class_type": "SimpleMath+"
+  },
+  "984": {
+    "inputs": {
+      "mode": "raw value",
+      "displaytext": "2",
+      "input": [
+        "983",
+        0
+      ]
+    },
+    "class_type": "DisplayAny"
+  },
+  "985": {
+    "inputs": {
+      "model": [
+        "994",
+        0
+      ],
+      "conditioning": [
+        "963",
+        0
+      ]
+    },
+    "class_type": "BasicGuider"
+  },
+  "986": {
+    "inputs": {
+      "noise": [
+        "988",
+        0
+      ],
+      "guider": [
+        "985",
+        0
+      ],
+      "sampler": [
+        "959",
+        0
+      ],
+      "sigmas": [
+        "989",
+        0
+      ],
+      "latent_image": [
+        "990",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced"
+  },
+  "988": {
+    "inputs": {
+      "noise_seed": 2962860111
+    },
+    "class_type": "RandomNoise"
+  },
+  "989": {
+    "inputs": {
+      "scheduler": "normal",
+      "steps": 12,
+      "denoise": 0.30000000000000004,
+      "model": [
+        "994",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler"
+  },
+  "990": {
+    "inputs": {
+      "noise_seed": 1511907244,
+      "noise_strength": 0.2,
+      "normalize": "false",
+      "latent": [
+        "958",
+        0
+      ]
+    },
+    "class_type": "InjectLatentNoise+"
+  },
+  "991": {
+    "inputs": {
+      "padding": 128,
+      "tiles": [
+        "961",
+        0
+      ],
+      "positions": [
+        "981",
+        1
+      ],
+      "original_size": [
+        "981",
+        2
+      ],
+      "grid_size": [
+        "981",
+        3
+      ]
+    },
+    "class_type": "TTP_Image_Assy"
+  },
+  "994": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": {
+        "type": "PowerLoraLoaderHeaderWidget"
+      },
+      "lora_1": {
+        "on": true,
+        "lora": "flux/F.1-小红书照片_最强网感｜时尚穿搭_trendy_ photo2.safetensors",
+        "strength": 0.15
+      },
+      "lora_2": {
+        "on": true,
+        "lora": "flux/Filmfotos_日系胶片写真_FLUX.safetensors",
+        "strength": 0.3
+      },
+      "lora_3": {
+        "on": true,
+        "lora": "flux/Mavica_Project_light.safetensors",
+        "strength": 0.5
+      },
+      "➕ Add Lora": "",
+      "model": [
+        "795",
+        0
+      ],
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "Power Lora Loader (rgthree)"
+  },
+  "995": {
+    "inputs": {
+      "module": 64,
+      "mode": "manual",
+      "position": "center",
+      "image": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "ml-ImageModuleCrop"
+  },
+  "1006": {
+    "inputs": {
+      "model": "gpt-4o-mini",
+      "base_url": "api.ganjiuwanshi.com",
+      "secret_key": "sk-P4nT6VcpCdKewq0M9b92469b4d94487c9e1d715d52Fd1c93",
+      "system_prompt": "Describe the image detaily and response in 120 words.\n\nFocus the person shape, and describe it fat or slim.",
+      "prompt": "Please help me describe it.",
+      "quality": "low",
+      "max_tokens": 1024,
+      "temperature": 0.7,
+      "image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "ml-LLMAsk(OpenAI)"
+  },
+  "1008": {
+    "inputs": {
+      "dict_name": "cloth",
+      "dict_value": "",
+      "input": [
+        "1006",
+        0
+      ],
+      "type": "json"
+    },
+    "class_type": "ml-SimpleXmlDict"
+  },
+  "1009": {
+    "inputs": {
+      "mode": "raw value",
+      "displaytext": "{\"object\": {\"image\": \"The image features a young woman standing on a pathway surrounded by lush, green shrubbery. She is wearing a light blue, sleeveless dress that falls just above her knees, giving her a casual yet stylish appearance. Her hair is long and dark, cascading over her shoulders. The woman has a slim figure, and she pairs her dress with white athletic socks and gray sneakers, adding a sporty touch to her outfit. She carries a light-colored tote bag, contributing to the relaxed vibe of the scene. The sunlight filters through the trees, creating a bright and inviting atmosphere around her. The overall setting feels serene and summery.\", \"cloth\": \"The image features a woman wearing a stylish outfit that combines a white, long-sleeved blouse with a black, sleeveless dress. The blouse has a classic collar and billowy sleeves, adding a touch of elegance. The black dress is fitted at the bodice, with buttons down the front, and flows into a midi-length skirt, creating a flattering silhouette. The woman appears slim, with a graceful posture as she stands confidently. She accessorizes with a small white handbag and wears pointed-toe white shoes, enhancing her chic look. The overall aesthetic is sophisticated and trendy, suitable for various occasions. The background is minimalistic, allowing the outfit to stand out.\"}}",
+      "input": [
+        "809",
+        0
+      ]
+    },
+    "class_type": "DisplayAny"
+  },
+  "1017": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "715",
+        0
+      ],
+      "segformer_pipeline": [
+        "1018",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "1018": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": false,
+      "hair": false,
+      "hat": true,
+      "sunglass": false,
+      "left_arm": false,
+      "right_arm": false,
+      "left_leg": false,
+      "right_leg": false,
+      "left_shoe": true,
+      "right_shoe": true,
+      "upper_clothes": true,
+      "skirt": true,
+      "pants": true,
+      "dress": true,
+      "belt": true,
+      "bag": true,
+      "scarf": true
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "1019": {
+    "inputs": {
+      "mask": [
+        "1017",
+        1
+      ]
+    },
+    "class_type": "InvertMask"
+  },
+  "1024": {
+    "inputs": {
+      "width": 3072,
+      "height": 4096,
+      "interpolation": "nearest",
+      "method": "stretch",
+      "condition": "always",
+      "multiple_of": 0,
+      "image": [
+        "453",
+        0
+      ]
+    },
+    "class_type": "ImageResize+"
+  },
+  "1029": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": {
+        "type": "PowerLoraLoaderHeaderWidget"
+      },
+      "lora_1": {
+        "on": false,
+        "lora": "flux/F.1-小红书照片_最强网感｜时尚穿搭_trendy_ photo2.safetensors",
+        "strength": 0.15
+      },
+      "lora_2": {
+        "on": true,
+        "lora": "flux/Filmfotos_日系胶片写真_FLUX.safetensors",
+        "strength": 0.7
+      },
+      "lora_3": {
+        "on": false,
+        "lora": "flux/Mavica_Project_light.safetensors",
+        "strength": 0.5
+      },
+      "lora_4": {
+        "on": false,
+        "lora": "flux/flux.1_lora_flyway_Epic-detail_v2.safetensors",
+        "strength": 0.45
+      },
+      "➕ Add Lora": "",
+      "model": [
+        "795",
+        0
+      ],
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "Power Lora Loader (rgthree)"
+  },
+  "1032": {
+    "inputs": {
+      "image": [
+        "431",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "1025": {
+    "inputs": {
+      "text": "1,3292,2548,3",
+      "tensor": [
+        "431",
+        0
+      ]
+    },
+    "class_type": "easy showTensorShape"
+  },
+  "1030": {
+    "inputs": {
+      "text": "1,1984,1536,3",
+      "tensor": [
+        "605",
+        0
+      ]
+    },
+    "class_type": "easy showTensorShape"
+  }
+}
