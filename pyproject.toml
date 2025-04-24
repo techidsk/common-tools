@@ -1,16 +1,38 @@
 [project]
 name = "common-tools"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "aiohttp>=3.11.12",
-    "dpath>=2.2.0",
-    "httpx>=0.28.1",
-    "huggingface-hub>=0.29.2",
-    "prefect>=3.1.11",
-    "pydantic>=2.10.4",
-    "python-dotenv>=1.0.1",
-    "redis>=5.2.1",
+description = "Common tools for AI projects"
+authors = [
+    {name = "techidsk", email = "ecpknymt@gmail.com"},
 ]
+dependencies = [
+    "fastapi>=0.109.0",
+    "sqlmodel>=0.0.14",
+    "python-dotenv>=1.0.0",
+    "loguru>=0.7.2",
+    "uvicorn>=0.27.0",
+    "pydantic>=2.6.0",
+    "alembic>=1.13.0",
+    "asyncpg>=0.29.0",
+    "black>=24.0.0",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "python-multipart>=0.0.9",
+    "pymysql>=1.1.1",
+]
+requires-python = ">=3.12"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]

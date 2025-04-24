@@ -27,6 +27,14 @@ class ComfyUIServer(BaseModel):
         description="服务器完整URL，例如: http://localhost:8188 或 https://example.com:8188"
     )
 
+    @model_validator(mode='before')
+    @classmethod
+    def normalize_url(cls, values: dict) -> dict:
+        """规范化 URL，移除末尾的斜杠"""
+        if 'url' in values:
+            values['url'] = values['url'].rstrip('/')
+        return values
+
     @property
     def host(self) -> str:
         """从 URL 中获取主机名"""
@@ -56,7 +64,7 @@ class TaskDispatcherConfig(BaseModel):
     """任务分发器配置"""
 
     servers: List[ComfyUIServer] = Field(default=None)
-    redis_config: dict = Field(
+    redis_config: Dict = Field(
         default_factory=lambda: {
             "host": os.getenv("REDIS_HOST", "localhost"),
             "port": int(os.getenv("REDIS_PORT", "6379")),
@@ -68,6 +76,10 @@ class TaskDispatcherConfig(BaseModel):
     resize_short_edge: int = Field(
         default=int(os.environ.get("RESIZE_SHORT_EDGE", 1536)),
         description="调整图片短边大小",
+    )
+    require_interaction: bool = Field(
+        default=os.environ.get("REQUIRE_INTERACTION", "false").lower() == "true",
+        description="是否需要用户交互确认",
     )
 
     @model_validator(mode="before")
@@ -170,7 +182,7 @@ class TaskDispatcher:
 
         tasks = []
         for server in self.config.servers:
-            logger.debug(f"开始检查服务器: {server.url}")
+            # logger.debug(f"开始检查服务器: {server.url}")
             tasks.append(self._check_server_status(server))
         
         # 并发检查所有服务器
@@ -196,18 +208,69 @@ class TaskDispatcher:
             logger.info(f"初始化完成，可用服务器数量: {len(self.available_servers)}")
         else:
             logger.error("没有可用的服务器！")
-            raise RuntimeError("No available servers")
+            
+            # 如果需要交互确认
+            if self.config.require_interaction:
+                while True:
+                    response = input("没有可用的服务器，是否继续？(y/N): ").lower()
+                    if response in ['y', 'yes']:
+                        logger.warning("用户选择继续执行，但可能无法正常工作")
+                        self._initialized = True  # 强制设置为已初始化
+                        break
+                    elif response in ['n', 'no', '']:
+                        raise RuntimeError("用户选择终止执行")
+                    else:
+                        print("请输入 y 或 n")
+            else:
+                raise RuntimeError("No available servers")
 
     async def _check_server_status(self, server: ComfyUIServer, max_retries: int = 3) -> bool:
         """检查服务器状态"""
+        # 从 URL 中提取 host
+        from urllib.parse import urlparse
+        parsed_url = urlparse(server.url)
+        host = parsed_url.netloc
+        
+        headers = {
+            "Host": host,
+            "User-Agent": "curl/8.5.0",
+            "Accept": "*/*",
+            "Connection": "keep-alive"
+        }
+        
         for attempt in range(max_retries):
             try:
-                async with httpx.AsyncClient(timeout=30.0, verify=False) as client:
-                    response = await client.get(f"{server.url}/system_stats")
+                # 使用 httpx 的 SSL 配置
+                ssl_context = httpx.create_ssl_context(verify=False)
+                ssl_context.check_hostname = False
+                
+                async with httpx.AsyncClient(
+                    timeout=30.0,
+                    verify=False,
+                    http2=False  # 禁用 HTTP/2，使用 HTTP/1.1
+                ) as client:
+                    response = await client.get(
+                        f"{server.url}/system_stats",
+                        headers=headers,
+                        follow_redirects=True
+                    )
+                    
+                    # 处理不同的状态码
                     if response.status_code == 200:
-                        logger.info(f"服务器 {server.url} 检查成功")
+                        # logger.debug(f"服务器 {server.url} 检查成功")
                         return True
-                    logger.warning(f"服务器 {server.url} 返回状态码: {response.status_code}")
+                    elif response.status_code == 403:
+                        logger.warning(f"服务器 {server.url} 返回 403，可能是正在初始化 (尝试 {attempt + 1}/{max_retries})")
+                        if attempt < max_retries - 1:
+                            # 对于 403，使用更长的等待时间，因为服务器可能在初始化
+                            wait_time = 10  # 等待10秒
+                            logger.info(f"等待 {wait_time} 秒后重试...")
+                            await asyncio.sleep(wait_time)
+                            continue
+                    else:
+                        logger.warning(f"服务器 {server.url} 返回状态码: {response.status_code}")
+                        logger.debug(f"响应内容: {response.text}")
+                        
             except Exception as e:
                 logger.error(f"检查服务器状态失败 {server.url} (尝试 {attempt + 1}/{max_retries}): {str(e)}")
                 if attempt < max_retries - 1:

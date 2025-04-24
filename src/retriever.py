@@ -1,3 +1,35 @@
+"""
+文件检索器模块
+
+该模块提供了文件检索功能，支持文件监控模式以实时监控文件变化。
+
+用于检索文件夹中的所有图片文件，包括层级文件夹。
+主要用于批量跑输入只有单图的任务
+
+主要组件:
+- FileRetrieverConfig: 文件检索器配置类
+- FileRetriever: 文件检索器实现类
+- FileEventHandler: 文件事件处理器类
+
+使用示例:
+    config = FileRetrieverConfig(
+        target_folders=[Path(r"D:\works\W-WCY\0306\p1")],
+        folder_keywords=["款式"],
+        image_extensions={".png", ".jpg", ".jpeg", ".webp"},
+        image_keywords=["款式"],
+        watch_mode=True,
+    )
+    retriever = FileRetriever(config)
+    retriever.start(callback=handle_new_files)
+
+    def handle_new_files(files: List[Path]):
+        for file in files:
+            print(f"发现新文件: {file} - {file.name}")
+
+    def handle_folder_change(folder: Path):
+        print(f"文件夹发生变化: {folder}")
+"""
+
 from pathlib import Path
 from typing import List, Set, Callable
 from loguru import logger

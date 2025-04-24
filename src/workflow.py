@@ -178,6 +178,7 @@ class WorkflowManager:
                 logger.debug(f"找到 noise_seed 路径: {noise_seed_path}, 当前值: {current_noise_seed}")
         
         # 如果找到了随机种子节点，并且没有在 seed 配置中指定，则为它们设置随机值
+        # TODO 似乎不是稳定的
         if seed_paths and "seed" not in self._node_config:
             for path in seed_paths:
                 # 生成一个随机种子值
@@ -237,8 +238,60 @@ class WorkflowManager:
                 self._process_node_config(workflow, key, config, **kwargs)
 
         # self._set_node_random_seed(workflow)
+        
+        # 处理所有的种子值
+        self.handle_seed_values(workflow)
 
         return workflow
+        
+    def handle_seed_values(self, workflow: dict) -> None:
+        """处理工作流中的所有种子值
+        
+        查找工作流中所有包含 seed 或 noise_seed 的输入节点，并替换为随机值。
+        如果在配置中有指定，则优先使用配置中的值。
+        
+        Args:
+            workflow: 工作流数据
+        """
+        # 获取配置中的种子设置
+        seed_configs = {}
+        if hasattr(self, "_node_config"):
+            for key, config in self._node_config.items():
+                if isinstance(config, NodeConfig):
+                    # 检查配置路径是否包含 seed 相关路径
+                    paths = config.path if isinstance(config.path, list) else [config.path]
+                    if any("seed" in path.lower() for path in paths):
+                        seed_configs[key] = config
+        
+        # 查找工作流中所有包含 seed 或 noise_seed 的输入节点
+        seed_paths = []
+        for node_id, node_data in workflow.items():
+            if isinstance(node_data, dict) and "inputs" in node_data:
+                inputs = node_data["inputs"]
+                if isinstance(inputs, dict):
+                    # 检查是否有 seed 输入
+                    if "seed" in inputs:
+                        seed_paths.append(f"{node_id}/inputs/seed")
+                    # 检查是否有 noise_seed 输入
+                    if "noise_seed" in inputs:
+                        seed_paths.append(f"{node_id}/inputs/noise_seed")
+        
+        # 如果找到了种子路径
+        if seed_paths:
+            logger.debug(f"找到种子路径: {seed_paths}")
+            
+            # 检查配置中是否有覆盖
+            config_paths = set()
+            for config in seed_configs.values():
+                paths = config.path if isinstance(config.path, list) else [config.path]
+                config_paths.update(paths)
+            
+            # 对于每个种子路径，如果不在配置中，则设置随机值
+            for path in seed_paths:
+                if path not in config_paths:
+                    random_seed = random.randint(0, 999999999)
+                    dpath.set(workflow, path, random_seed, "/")
+                    # logger.info(f"设置随机种子: {path} = {random_seed}")
 
     def _get_resize_edge(self) -> int:
         """获取图片缩放尺寸"""

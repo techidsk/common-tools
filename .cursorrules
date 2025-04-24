@@ -9,3 +9,5 @@ Dependencies
 Details
 - Use default type instead of typing.
 - Don't modify the other code.
+
+- 使用 UV 进行依赖管理，并不是直接使用 pip

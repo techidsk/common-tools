@@ -35,10 +35,13 @@
 """
 
 import asyncio
+import json
+import random
 import traceback
+import os
+from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List
-from math import ceil
+from typing import Any, Dict, List, Optional, Union
 
 from loguru import logger
 from prefect import flow, get_run_logger, task
@@ -46,8 +49,50 @@ from pydantic import BaseModel, Field
 
 from src.dispatcher import ComfyUIServer, TaskDispatcher, TaskDispatcherConfig
 from src.retriever import FileRetriever, FileRetrieverConfig
-from src.workflow import WorkflowConfig, WorkflowManager
+from src.workflow import WorkflowManager
 
+
+class WorkflowConfigProvider(ABC):
+    @abstractmethod
+    async def get_workflow(self, workflow_id: Union[int, str]) -> Dict[str, Any]:
+        """获取工作流配置"""
+        pass
+    
+    @abstractmethod
+    async def get_node_config(self, config_id: Union[int, str]) -> Dict[str, Any]:
+        """获取节点配置"""
+        pass
+
+# 数据库配置提供器 - 连接到你现有的API
+class DatabaseConfigProvider(WorkflowConfigProvider):
+    def __init__(self, crud_service):
+        self.crud_service = crud_service
+    
+    async def get_workflow(self, workflow_id: int) -> Dict[str, Any]:
+        workflow = await self.crud_service.get_workflow(workflow_id)
+        if not workflow:
+            raise ValueError(f"Workflow with ID {workflow_id} not found")
+        return workflow.config  # 假设你的WorkflowConfig模型有一个config字段
+    
+    async def get_node_config(self, config_id: int) -> Dict[str, Any]:
+        node_config = await self.crud_service.get_node_config(config_id)
+        if not node_config:
+            raise ValueError(f"Node config with ID {config_id} not found")
+        return node_config.config
+
+# 文件系统配置提供器 - 用于本地开发
+class FileSystemConfigProvider(WorkflowConfigProvider):
+    def __init__(self, workflow_path: Path, node_config_path: Path):
+        self.workflow_path = workflow_path
+        self.node_config_path = node_config_path
+    
+    async def get_workflow(self, workflow_id: Union[int, str] = None) -> Dict[str, Any]:
+        with open(self.workflow_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    
+    async def get_node_config(self, config_id: Union[int, str] = None) -> Dict[str, Any]:
+        with open(self.node_config_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
 
 class ServiceConfig(BaseModel):
     """服务配置"""
@@ -63,36 +108,50 @@ class ServiceConfig(BaseModel):
         description="""
         工作流输入映射配置，定义每个输入节点对应的图片来源，格式如：
         {
-            "model_image": {  # 输入类型标识符
-                "path": "模特",  # 对应的文件夹路径
-                "description": "模特图输入",  # 描述信息
-                "required": true,  # 是否必需
-                "workflow_param": "image1",  # 工作流中实际使用的参数名称，可选，默认使用输入类型标识符
-                "is_main": false,  # 是否是主导输入类型，决定处理循环的主体
-                "total_generations": 10,  # 总生成数量限制
-                "generations_per_input": 3  # 每个输入的生成次数
-            },
-            "reference_image": {
+            "style_image": {  # 款式图片
                 "path": "款式",
-                "description": "款式图片输入",
-                "required": true,
-                "workflow_param": "image2",
-                "is_main": true
+                "is_main": true,
+                "generations_per_style": 10,  # 每个款式文件夹生成的图片数量
+                "max_generations_per_image": 2,  # 每张源图片最多使用次数
+                "min_generations_per_image": 1   # 每张源图片最少使用次数
+            },
+            "model_image": {
+                "path": "模特",
+                "random_select": true  # 随机选择模特图片
             }
         }
         """
     )
 
-    # 工作流配置
-    workflow_path: Path = Field(..., description="工作流JSON文件路径")
-    node_config_path: Path = Field(..., description="节点配置JSON文件路径")
+    # 工作流配置 - 可以是ID或文件路径
+    workflow_source: str = Field(default="db", description="工作流配置来源: 'db' 或 'file'")
+    workflow_id: Optional[int] = Field(default=None, description="工作流ID（数据库模式）")
+    node_config_id: Optional[int] = Field(default=None, description="节点配置ID（数据库模式）")
+    workflow_path: Optional[Path] = Field(default=None, description="工作流JSON文件路径（文件模式）")
+    node_config_path: Optional[Path] = Field(default=None, description="节点配置JSON文件路径（文件模式）")
 
     # 输出配置
     output_root: Path = Field(default=Path("outputs"), description="输出根目录")
-    batch_size: int = Field(default=3, description="批处理大小")
+    batch_size: int | None = Field(default=None, description="批处理大小，默认等于服务器数量")
 
     # 服务器配置
-    servers: List[str] = Field(default_factory=list, description="服务器列表")
+    servers: List[str] = Field(..., description="服务器列表")
+
+    def model_post_init(self, __context):
+        """初始化后验证配置"""
+        if not self.servers:
+            raise ValueError("服务器列表不能为空")
+        
+        if self.batch_size is None:
+            self.batch_size = len(self.servers)
+            
+        # 验证工作流配置
+        if self.workflow_source == "db":
+            if self.workflow_id is None:
+                raise ValueError("使用数据库模式时，必须提供工作流ID")
+        elif self.workflow_source == "file":
+            if self.workflow_path is None or self.node_config_path is None:
+                raise ValueError("使用文件模式时，必须提供工作流和节点配置文件路径")
 
     def get_input_type(self, path: Path) -> str:
         """根据路径获取输入类型"""
@@ -108,11 +167,12 @@ class ServiceConfig(BaseModel):
 class BatchProcessor:
     """批处理服务"""
 
-    def __init__(self, config: ServiceConfig):
+    def __init__(self, config: ServiceConfig, db=None, workflow_crud=None):
         self.config = config
-        self._setup_components()
+        self.db = db
+        self._setup_components(workflow_crud)
 
-    def _setup_components(self):
+    def _setup_components(self, workflow_crud=None):
         """初始化各个组件"""
         # 文件检索器
         self.retriever = FileRetriever(
@@ -123,13 +183,19 @@ class BatchProcessor:
             )
         )
 
-        # 工作流管理器
-        self.workflow_manager = WorkflowManager(
-            WorkflowConfig(
-                workflow_path=self.config.workflow_path,
-                node_config_path=self.config.node_config_path,
+        # 创建配置提供器
+        if self.config.workflow_source == "db":
+            if workflow_crud is None:
+                raise ValueError("使用数据库模式时，必须提供workflow_crud实例")
+            self.config_provider = DatabaseConfigProvider(workflow_crud)
+        else:  # 文件模式
+            self.config_provider = FileSystemConfigProvider(
+                self.config.workflow_path,
+                self.config.node_config_path
             )
-        )
+        
+        # 修改工作流管理器初始化，使用配置提供器
+        self.workflow_manager = WorkflowManager(self.config_provider)
         # 设置输入映射
         self.workflow_manager.set_input_mapping(self.config.input_mapping)
 
@@ -244,8 +310,8 @@ class BatchProcessor:
             logger.info("发现的图片分组信息：")
             for input_type, images in input_groups.items():
                 logger.info(f"\n[{input_type}] 类型，共 {len(images)} 张图片:")
-                for img in images:
-                    logger.info(f"  - {img}")
+                # for img in images:
+                #     logger.info(f"  - {img}")
             logger.info("=" * 50)
 
             # 检查必需的输入是否都存在
@@ -283,11 +349,6 @@ class BatchProcessor:
             server_count = len(available_servers)
             logger.info(f"当前可用服务器数量: {server_count}")
 
-            # 创建任务队列
-            all_results = []
-            active_tasks = set()
-            processed_count = 0
-
             # 获取主输入类型（用于确定要处理的图片数量）
             try:
                 main_input_type = next(name for name, config in self.config.input_mapping.items() 
@@ -302,43 +363,196 @@ class BatchProcessor:
             
             # 获取主输入类型的配置
             main_config = self.config.input_mapping[main_input_type]
+            logger.info(f"主输入类型配置: {main_config}")
             
-            # 获取生成次数的配置
-            min_generations = main_config.get("min_generations", 1)  # 每个输入的最小生成次数
-            max_generations = main_config.get("max_generations", 1)  # 每个输入的最大生成次数
-            total_limit = main_config.get("total_generations", None)  # 总生成数量限制
-            
-            # 计算实际需要生成的总数
-            total_inputs = len(main_images)
-            max_possible_generations = total_inputs * max_generations
-            
-            if total_limit is not None and total_limit > 0:
-                actual_total = min(total_limit, max_possible_generations)
-                # 重新计算每个输入的最大生成次数
-                adjusted_max_per_input = min(max_generations, ceil(actual_total / total_inputs))
-                logger.info(f"由于总数限制 {total_limit}，每个输入的最大生成次数调整为 {adjusted_max_per_input}")
-            else:
-                actual_total = max_possible_generations
-                adjusted_max_per_input = max_generations
-            
-            logger.info(
-                f"生成配置:\n"
-                f"- 输入图片数量: {total_inputs}\n"
-                f"- 每个输入最小生成次数: {min_generations}\n"
-                f"- 每个输入最大生成次数: {adjusted_max_per_input}\n"
-                f"- 预计总生成数量: {actual_total}"
-            )
+            # 获取生成配置
+            generations_per_style = main_config.get("generations_per_style", 10)  # 每个款式生成数量
+            max_per_image = main_config.get("max_generations_per_input", 7)  # 每张图片最多使用次数
+            min_per_image = main_config.get("min_generations_per_input", 1)  # 每张图片最少使用次数
 
-            # 处理所有主输入图片
-            import random
-            task_count = 0
-            generated_count = 0
-            remaining_total = actual_total
+            # 创建任务队列
+            task_queue = []
+            
+            # 按文件夹组织主输入图片
+            style_folders = {}
+            for main_path in main_images:
+                folder = main_path.parent
+                if folder not in style_folders:
+                    style_folders[folder] = []
+                style_folders[folder].append(main_path)
+
+            # 处理每个款式文件夹
+            for style_folder, style_images in style_folders.items():
+                image_count = len(style_images)
+                
+                # 初始化生成次数列表
+                generation_times = [min_per_image] * image_count  # 先给每个图片分配最小次数
+                remaining = generations_per_style - (min_per_image * image_count)  # 计算剩余需要分配的次数
+                
+                # 计算每张图片还可以分配多少次
+                max_additional = max_per_image - min_per_image
+                
+                # 计算平均应该分配的次数
+                if remaining > 0:
+                    base_additional = remaining // image_count
+                    extra_count = remaining % image_count
+                    
+                    # 先平均分配
+                    for i in range(image_count):
+                        generation_times[i] += base_additional
+                    
+                    # 随机分配剩余的次数
+                    if extra_count > 0:
+                        # 随机选择图片进行分配
+                        indices = list(range(image_count))
+                        random.shuffle(indices)
+                        for i in range(extra_count):
+                            generation_times[indices[i]] += 1
+                
+                actual_total = sum(generation_times)
+                # logger.info(
+                #     f"\n处理款式文件夹: {style_folder.name}\n"
+                #     f"- 源图片数量: {image_count}\n"
+                #     f"- 目标生成数量: {generations_per_style}\n"
+                #     f"- 实际生成数量: {actual_total}\n"
+                #     f"- 各图片生成次数: {generation_times}\n"
+                #     f"- 最大允许次数: {max_per_image}\n"
+                #     f"- 最小要求次数: {min_per_image}"
+                # )
+
+                # 为每张图片创建对应次数的任务
+                for img_idx, (style_image, times) in enumerate(zip(style_images, generation_times)):
+                    for i in range(times):
+                        # 准备输入图片组合
+                        image_paths = {main_input_type: style_image}
+
+                        # 为其他输入类型选择图片
+                        for input_type, images in input_images.items():
+                            if input_type != main_input_type:
+                                config = self.config.input_mapping[input_type]
+                                is_folder = config.get("is_folder", False)
+                                random_folder = config.get("random_folder", False)
+                                
+                                if is_folder and random_folder:
+                                    # If is_folder and random_folder are set, randomly select an image from a random subfolder.
+                                    
+                                    target_folder_name = config.get("path") # e.g., "模特"
+                                    if not target_folder_name:
+                                        logger.error(f"Input type '{input_type}' is configured for folder selection but has no 'path' defined.")
+                                        image_paths[input_type] = None
+                                        continue
+
+                                    # Determine the base directory (e.g., ".../batch_1/模特") relative to the main image
+                                    model_image_base_dir = None
+                                    try:
+                                        # Assumes '模特' and '款式' folders are siblings
+                                        model_image_base_dir = style_image.parent.parent / target_folder_name
+                                        if not model_image_base_dir.is_dir():
+                                            # Raise error to trigger fallback or log clearly
+                                            raise FileNotFoundError(f"Calculated base directory '{model_image_base_dir}' does not exist or is not a directory.")
+                                    except Exception as e: # Catch potential issues with path calculation or FileNotFoundError
+                                        logger.warning(f"Could not determine base directory for '{input_type}' based on '{style_image.name}'. Error: {e}. Trying fallback using provided image list.")
+                                        # Fallback: Try to infer from the 'images' list if path calculation failed
+                                        if images:
+                                            # Find the common ancestor directory containing the target_folder_name
+                                            potential_base_dir = None
+                                            test_path = images[0]
+                                            # Iterate upwards to find the parent containing the target folder name
+                                            current = test_path.parent
+                                            while current != current.parent: # Stop at root
+                                                check_dir = current / target_folder_name
+                                                if check_dir.is_dir() and target_folder_name in str(images[0]): # Check if target exists as sibling and image path contains the name
+                                                     potential_base_dir = check_dir
+                                                     break
+                                                # Check if the current directory *is* the target directory name itself
+                                                if current.name == target_folder_name and current.is_dir():
+                                                     potential_base_dir = current
+                                                     break
+                                                current = current.parent # Go up one level
+
+                                            if potential_base_dir and potential_base_dir.is_dir():
+                                                 model_image_base_dir = potential_base_dir
+                                                 logger.info(f"Using fallback base directory: {model_image_base_dir}")
+                                            else:
+                                                 logger.error(f"Could not determine base directory for '{input_type}' using fallback method from image {images[0]}.")
+                                                 image_paths[input_type] = None
+                                        else:
+                                            logger.error(f"Could not determine base directory for '{input_type}', and no images provided for fallback.")
+                                            image_paths[input_type] = None
+                                    
+                                    # Ensure we have a valid directory before proceeding
+                                    if not model_image_base_dir or not model_image_base_dir.is_dir():
+                                        logger.error(f"Failed to establish a valid base directory for input type '{input_type}'.")
+                                        image_paths[input_type] = None
+                                        continue
+
+                                    # Find subdirectories within the base directory
+                                    subfolders = [d for d in model_image_base_dir.iterdir() if d.is_dir()]
+                                    
+                                    chosen_folder = None
+                                    if subfolders:
+                                        # Case 1: Subfolders exist, pick one randomly
+                                        chosen_folder = random.choice(subfolders)
+                                        logger.debug(f"Randomly selected subfolder: {chosen_folder}")
+                                    else:
+                                        # Case 2: No subfolders, use the base directory itself as the folder to select images from
+                                        # This directly addresses the user's reported issue scenario.
+                                        logger.debug(f"Input type '{input_type}' directory {model_image_base_dir} has no subfolders. Selecting images directly from this directory.")
+                                        chosen_folder = model_image_base_dir
+
+                                    # Find valid image files in the chosen folder (either a subfolder or the base directory)
+                                    folder_images = [f for f in chosen_folder.iterdir() if f.is_file() and f.suffix.lower() in self.config.image_extensions]
+                                    
+                                    if not folder_images:
+                                         logger.warning(f"Selected folder {chosen_folder} for input type '{input_type}' contains no valid images matching extensions {self.config.image_extensions}.")
+                                         image_paths[input_type] = None 
+                                         # Consider adding logic here to try another subfolder if one was chosen and was empty.
+                                         continue
+                                         
+                                    # Select a random image from the list
+                                    image_paths[input_type] = random.choice(folder_images)
+                                    logger.debug(f"Selected image for '{input_type}': {image_paths[input_type].name} from folder {chosen_folder.name}")
+                                    
+                                elif config.get("random_select", False):
+                                    # Original random selection logic (from the flat list of images for this type)
+                                    if images:
+                                        image_paths[input_type] = random.choice(images)
+                                    else:
+                                        logger.warning(f"Input type '{input_type}' is configured for random selection, but no images found.")
+                                        image_paths[input_type] = None # Handle missing images
+                                else:
+                                    # Original sequential selection logic
+                                    if images:
+                                        image_paths[input_type] = images[i % len(images)]
+                                    else:
+                                         logger.warning(f"Input type '{input_type}' has no images for sequential selection.")
+                                         image_paths[input_type] = None # Handle missing images
+
+                        # Filter out None paths before adding to queue
+                        valid_image_paths = {k: v for k, v in image_paths.items() if v is not None}
+                        # Check if all required inputs are present
+                        if len(valid_image_paths) != len(self.config.input_mapping): 
+                             # Find missing keys for better logging
+                             missing_keys = set(self.config.input_mapping.keys()) - set(valid_image_paths.keys())
+                             logger.warning(f"Skipping task for {style_image.name} (gen {i+1}) due to missing input images for types: {missing_keys}. Required: {list(self.config.input_mapping.keys())}, Found: {list(valid_image_paths.keys())}")
+                             continue # Skip this specific generation task
+
+                        # Add the task with validated paths to the queue
+                        task_queue.append((style_image, valid_image_paths, i + 1, times))
+
+            # 显示实际要处理的任务数量
+            total_tasks = len(task_queue)
+            logger.info(f"总共创建了 {total_tasks} 个任务")
+
+            # 处理任务队列
+            all_results = []
+            active_tasks = set()
+            processed_count = 0
 
             async def process_combined_images(main_path: Path, image_paths: dict[str, Path], server: ComfyUIServer):
                 """处理一组输入图片"""
                 try:
-                    # 准备输入图片组
+                    # 将单个路径转换为列表格式
                     input_groups = {
                         input_type: [path] for input_type, path in image_paths.items()
                     }
@@ -372,63 +586,33 @@ class BatchProcessor:
                     logger.error(f"处理失败: {str(e)}")
                     return []
 
-            for main_path in main_images:
-                if remaining_total <= 0:
-                    logger.info("已达到总生成数量限制")
-                    break
-                    
-                # 为当前输入计算生成次数
-                max_for_current = min(adjusted_max_per_input, remaining_total)
-                if max_for_current < min_generations:
-                    logger.warning(f"剩余配额不足以满足最小生成次数要求，将生成 {max_for_current} 次")
-                    generations_for_this_input = max_for_current
-                else:
-                    generations_for_this_input = random.randint(min_generations, max_for_current)
+            for task_idx, (main_path, image_paths, gen_idx, total_gens) in enumerate(task_queue):
+                server = available_servers[task_idx % server_count]
                 
-                logger.info(f"将为 {main_path.name} 生成 {generations_for_this_input} 张图片")
-                remaining_total -= generations_for_this_input
+                # 记录处理信息
+                paths_info = ", ".join(f"{k}: {v.name}" for k, v in image_paths.items())
+                main_desc = self.config.input_mapping[main_input_type]["description"]
+                logger.info(f"处理{main_desc} {main_path.name} (第 {gen_idx}/{total_gens} 次生成): {paths_info}")
+                
+                # 创建新任务
+                task = asyncio.create_task(process_combined_images(main_path, image_paths, server))
+                active_tasks.add(task)
+                task.add_done_callback(active_tasks.discard)
 
-                # 对每个主输入图片生成指定次数
-                for gen_idx in range(generations_for_this_input):
-                    # 为每个输入类型选择图片
-                    image_paths = {main_input_type: main_path}
-                    for input_type, images in input_images.items():
-                        if input_type != main_input_type:
-                            # 检查是否需要随机选择
-                            if self.config.input_mapping[input_type].get("random_select", False):
-                                image_paths[input_type] = random.choice(images)
-                            else:
-                                # 如果不随机，使用索引选择（可以根据需要修改选择逻辑）
-                                image_paths[input_type] = images[gen_idx % len(images)]
-                    
-                    server = available_servers[task_count % server_count]
-                    task_count += 1
-                    
-                    # 记录处理信息
-                    paths_info = ", ".join(f"{k}: {v.name}" for k, v in image_paths.items())
-                    main_desc = self.config.input_mapping[main_input_type]["description"]
-                    logger.info(f"处理{main_desc} {main_path.name} (第 {gen_idx + 1}/{generations_for_this_input} 次生成): {paths_info}")
-                    
-                    # 创建新任务
-                    task = asyncio.create_task(process_combined_images(main_path, image_paths, server))
-                    active_tasks.add(task)
-                    task.add_done_callback(active_tasks.discard)
-                    generated_count += 1
-
-                    # 如果活动任务数达到批处理大小，等待一个任务完成
-                    while len(active_tasks) >= self.config.batch_size:
-                        done, _ = await asyncio.wait(
-                            active_tasks, return_when=asyncio.FIRST_COMPLETED
-                        )
-                        for completed_task in done:
-                            try:
-                                result = await completed_task
-                                if isinstance(result, list):
-                                    all_results.extend(result)
-                                    processed_count += 1
-                                    logger.info(f"进度: {processed_count}/{actual_total}")
-                            except Exception as e:
-                                logger.error(f"任务执行失败: {str(e)}")
+                # 如果活动任务数达到批处理大小，等待一个任务完成
+                while len(active_tasks) >= self.config.batch_size:
+                    done, _ = await asyncio.wait(
+                        active_tasks, return_when=asyncio.FIRST_COMPLETED
+                    )
+                    for completed_task in done:
+                        try:
+                            result = await completed_task
+                            if isinstance(result, list):
+                                all_results.extend(result)
+                                processed_count += 1
+                                logger.info(f"进度: {processed_count}/{total_tasks}")
+                        except Exception as e:
+                            logger.error(f"任务执行失败: {str(e)}")
 
             # 等待剩余的任务完成
             if active_tasks:
@@ -438,7 +622,7 @@ class BatchProcessor:
                         if isinstance(result, list):
                             all_results.extend(result)
                             processed_count += 1
-                            logger.info(f"进度: {processed_count}/{actual_total}")
+                            logger.info(f"进度: {processed_count}/{total_tasks}")
                     except Exception as e:
                         logger.error(f"任务执行失败: {str(e)}")
 
@@ -463,7 +647,7 @@ class BatchProcessor:
             output_images, status = await self.dispatcher.get_result(prompt_id, server)
 
             if status != "SUCCESS":
-                logger.error(f"任务失败 - 服务器: {server.url}, 状态: {status}")
+                logger.error(f"任务失败 {path} - 服务器: {server.url}, 状态: {status}")
                 return []
 
             # 保存结果

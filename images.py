@@ -209,7 +209,7 @@ if __name__ == "__main__":
 
     loop_folder(
         # r"C:\Sample\Curtain\3_curtain",
-        r"C:\Users\molook\Desktop\yi-0117",
+        r"D:\ftp\客户素材\W-WCY\2503_批量任务\最后交图\第一批交图",
         handle_image,
     )
     # listen_folder(r"C:\Users\ecpkn\Desktop\NewUI")
