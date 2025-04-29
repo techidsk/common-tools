@@ -1,0 +1,12 @@
+{
+  "name": "common-tools-docs",
+  "version": "1.0.0",
+  "description": "Common Tools API Documentation",
+  "scripts": {
+    "docs:dev": "docsify serve . -p 4779",
+    "docs:build": "docsify generate ."
+  },
+  "devDependencies": {
+    "docsify-cli": "^4.4.4"
+  }
+} 

@@ -1,0 +1,2167 @@
+{
+  "2": {
+    "inputs": {
+      "smaller_side": 1536,
+      "larger_side": 0,
+      "scale_factor": 0,
+      "upscale_method": "lanczos",
+      "image": [
+        "468",
+        0
+      ]
+    },
+    "class_type": "ml-ResizeImage"
+  },
+  "3": {
+    "inputs": {
+      "inputcount": 2,
+      "direction": "right",
+      "match_image_size": false,
+      "Update inputs": "",
+      "image_1": [
+        "44",
+        1
+      ],
+      "image_2": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "ImageConcatMulti"
+  },
+  "5": {
+    "inputs": {
+      "smaller_side": 0,
+      "scale_factor": 0,
+      "upscale_method": "lanczos",
+      "image": [
+        "612",
+        0
+      ],
+      "larger_side": [
+        "59",
+        0
+      ]
+    },
+    "class_type": "ml-ResizeImage"
+  },
+  "7": {
+    "inputs": {
+      "clip_name1": "clip_l.safetensors",
+      "clip_name2": "t5-v1_1-xxl-encoder-Q5_K_M.gguf",
+      "type": "flux"
+    },
+    "class_type": "DualCLIPLoaderGGUF"
+  },
+  "8": {
+    "inputs": {
+      "vae_name": "flux_vae.safetensors"
+    },
+    "class_type": "VAELoader"
+  },
+  "9": {
+    "inputs": {
+      "style_model_name": "flux1-redux-dev.safetensors"
+    },
+    "class_type": "StyleModelLoader"
+  },
+  "10": {
+    "inputs": {
+      "unet_name": "flux/flux1-dev-Q4_K_S.gguf"
+    },
+    "class_type": "UnetLoaderGGUF"
+  },
+  "11": {
+    "inputs": {
+      "unet_name": "flux/flux1-fill-dev-Q4_K_S.gguf"
+    },
+    "class_type": "UnetLoaderGGUF"
+  },
+  "12": {
+    "inputs": {
+      "object_to_patch": "diffusion_model",
+      "residual_diff_threshold": 0.125,
+      "start": 0.2,
+      "end": 1,
+      "max_consecutive_cache_hits": 5,
+      "model": [
+        "11",
+        0
+      ]
+    },
+    "class_type": "ApplyFBCacheOnModel"
+  },
+  "13": {
+    "inputs": {
+      "model": [
+        "137",
+        0
+      ]
+    },
+    "class_type": "DifferentialDiffusion"
+  },
+  "14": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": ".*",
+      "group_regex": "FluxFill_.*",
+      "MODEL": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "15": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": ".*",
+      "group_regex": "Flux_.*",
+      "MODEL": [
+        "151",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "16": {
+    "inputs": {
+      "object_to_patch": "diffusion_model",
+      "residual_diff_threshold": 0.125,
+      "start": 0.2,
+      "end": 1,
+      "max_consecutive_cache_hits": 5,
+      "model": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "ApplyFBCacheOnModel"
+  },
+  "17": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": ".*",
+      "group_regex": "Flux.*",
+      "CLIP": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "18": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "19": {
+    "inputs": {
+      "conditioning": [
+        "18",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut"
+  },
+  "20": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": "negative",
+      "group_regex": "Flux.*",
+      "CONDITIONING": [
+        "19",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "21": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": ".*",
+      "group_regex": "Flux.*",
+      "VAE": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "22": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": ".*",
+      "group_regex": "Flux.*",
+      "CLIP_VISION": [
+        "24",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "23": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": ".*",
+      "group_regex": "Flux.*",
+      "STYLE_MODEL": [
+        "9",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "24": {
+    "inputs": {
+      "clip_name": "sigclip_vision_patch14_384.safetensors"
+    },
+    "class_type": "CLIPVisionLoader"
+  },
+  "25": {
+    "inputs": {
+      "guidance": 33,
+      "conditioning": [
+        "125",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance"
+  },
+  "26": {
+    "inputs": {
+      "conditioning": [
+        "25",
+        0
+      ],
+      "model": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "BasicGuider"
+  },
+  "27": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect"
+  },
+  "28": {
+    "inputs": {
+      "scheduler": "beta",
+      "steps": 50,
+      "denoise": 0.9000000000000001,
+      "model": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler"
+  },
+  "29": {
+    "inputs": {
+      "noise_seed": 752217586874129
+    },
+    "class_type": "RandomNoise"
+  },
+  "32": {
+    "inputs": {
+      "noise": [
+        "29",
+        0
+      ],
+      "guider": [
+        "26",
+        0
+      ],
+      "sampler": [
+        "27",
+        0
+      ],
+      "sigmas": [
+        "28",
+        0
+      ],
+      "latent_image": [
+        "33",
+        2
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced"
+  },
+  "33": {
+    "inputs": {
+      "noise_mask": true,
+      "positive": [
+        "671",
+        0
+      ],
+      "pixels": [
+        "674",
+        0
+      ],
+      "mask": [
+        "48",
+        0
+      ],
+      "negative": [
+        "19",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "InpaintModelConditioning"
+  },
+  "34": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "42": {
+    "inputs": {
+      "model_name": "segm/person_yolov8m-seg.pt"
+    },
+    "class_type": "UltralyticsDetectorProvider"
+  },
+  "43": {
+    "inputs": {
+      "threshold": 0.5,
+      "dilation": 0,
+      "segm_detector": [
+        "42",
+        1
+      ],
+      "image": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "SegmDetectorCombined_v2"
+  },
+  "44": {
+    "inputs": {
+      "context_expand_pixels": 64,
+      "context_expand_factor": 1,
+      "fill_mask_holes": true,
+      "invert_mask": false,
+      "rescale_algorithm": "bicubic",
+      "mode": "ranged size",
+      "force_width": 1024,
+      "force_height": 1024,
+      "rescale_factor": 1,
+      "padding": 64,
+      "image": [
+        "2",
+        0
+      ],
+      "mask": [
+        "94",
+        0
+      ],
+      "optional_context_mask": [
+        "360",
+        0
+      ],
+      "min_width": [
+        "60",
+        0
+      ],
+      "min_height": [
+        "60",
+        0
+      ],
+      "max_width": [
+        "59",
+        0
+      ],
+      "max_height": [
+        "59",
+        0
+      ],
+      "blur_mask_pixels": [
+        "419",
+        0
+      ],
+      "blend_pixels": [
+        "423",
+        0
+      ]
+    },
+    "class_type": "InpaintCrop"
+  },
+  "48": {
+    "inputs": {
+      "expand": 20,
+      "incremental_expandrate": 0,
+      "tapered_corners": true,
+      "flip_input": false,
+      "blur_radius": 8,
+      "lerp_alpha": 1,
+      "decay_factor": 1,
+      "fill_holes": true,
+      "mask": [
+        "405",
+        0
+      ]
+    },
+    "class_type": "GrowMaskWithBlur"
+  },
+  "59": {
+    "inputs": {
+      "value": 1536
+    },
+    "class_type": "easy int"
+  },
+  "60": {
+    "inputs": {
+      "value": 384
+    },
+    "class_type": "easy int"
+  },
+  "62": {
+    "inputs": {
+      "width": [
+        "63",
+        0
+      ],
+      "height": [
+        "63",
+        1
+      ],
+      "x": 0,
+      "y": 0,
+      "image": [
+        "200",
+        0
+      ]
+    },
+    "class_type": "ImageCrop"
+  },
+  "63": {
+    "inputs": {
+      "image": [
+        "511",
+        1
+      ]
+    },
+    "class_type": "GetImageSize+"
+  },
+  "65": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "2",
+        0
+      ],
+      "segformer_pipeline": [
+        "66",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "66": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": false,
+      "hair": false,
+      "hat": false,
+      "sunglass": false,
+      "left_arm": true,
+      "right_arm": true,
+      "left_leg": true,
+      "right_leg": true,
+      "left_shoe": true,
+      "right_shoe": true,
+      "upper_clothes": true,
+      "skirt": true,
+      "pants": true,
+      "dress": true,
+      "belt": true,
+      "bag": true,
+      "scarf": true
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "69": {
+    "inputs": {
+      "inputcount": 2,
+      "direction": "right",
+      "match_image_size": false,
+      "Update inputs": "",
+      "image_1": [
+        "408",
+        0
+      ],
+      "image_2": [
+        "628",
+        0
+      ]
+    },
+    "class_type": "ImageConcatMulti"
+  },
+  "70": {
+    "inputs": {
+      "type": "image",
+      "width": 512,
+      "height": 512,
+      "resolution": "1024x1024 (1.0)",
+      "batch_size": 1,
+      "color": 0,
+      "image": [
+        "44",
+        1
+      ]
+    },
+    "class_type": "ml-NewImage"
+  },
+  "71": {
+    "inputs": {
+      "channel": "red",
+      "image": [
+        "69",
+        0
+      ]
+    },
+    "class_type": "ImageToMask"
+  },
+  "90": {
+    "inputs": {
+      "expand": 48,
+      "tapered_corners": true,
+      "mask": [
+        "65",
+        1
+      ]
+    },
+    "class_type": "GrowMask"
+  },
+  "94": {
+    "inputs": {
+      "mask1": [
+        "364",
+        0
+      ],
+      "mask2": [
+        "252",
+        0
+      ]
+    },
+    "class_type": "SubtractMask"
+  },
+  "95": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "2",
+        0
+      ],
+      "segformer_pipeline": [
+        "96",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "96": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": false,
+      "hair": true,
+      "hat": true,
+      "sunglass": true,
+      "left_arm": false,
+      "right_arm": false,
+      "left_leg": false,
+      "right_leg": false,
+      "left_shoe": false,
+      "right_shoe": false,
+      "upper_clothes": false,
+      "skirt": false,
+      "pants": false,
+      "dress": false,
+      "belt": false,
+      "bag": false,
+      "scarf": false
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "98": {
+    "inputs": {
+      "upscale_model": [
+        "99",
+        0
+      ],
+      "image": [
+        "62",
+        0
+      ]
+    },
+    "class_type": "ImageUpscaleWithModel"
+  },
+  "99": {
+    "inputs": {
+      "model_name": "2xNomosUni_span_multijpg_ldl.safetensors"
+    },
+    "class_type": "UpscaleModelLoader"
+  },
+  "125": {
+    "inputs": {
+      "downsampling_factor": 1,
+      "downsampling_function": "area",
+      "mode": "autocrop with mask",
+      "weight": 1,
+      "autocrop_margin": 0.1,
+      "conditioning": [
+        "33",
+        0
+      ],
+      "image": [
+        "617",
+        0
+      ],
+      "mask": [
+        "476",
+        0
+      ],
+      "style_model": [
+        "9",
+        0
+      ],
+      "clip_vision": [
+        "24",
+        0
+      ]
+    },
+    "class_type": "ReduxAdvanced"
+  },
+  "126": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": false,
+      "hair": false,
+      "hat": false,
+      "sunglass": false,
+      "left_arm": true,
+      "right_arm": true,
+      "left_leg": true,
+      "right_leg": true,
+      "left_shoe": true,
+      "right_shoe": true,
+      "upper_clothes": true,
+      "skirt": true,
+      "pants": true,
+      "dress": true,
+      "belt": true,
+      "bag": true,
+      "scarf": true
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "127": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "5",
+        0
+      ],
+      "segformer_pipeline": [
+        "126",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "135": {
+    "inputs": {
+      "tile_size": 1024,
+      "overlap": 64,
+      "temporal_size": 64,
+      "temporal_overlap": 8,
+      "samples": [
+        "32",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "VAEDecodeTiled"
+  },
+  "137": {
+    "inputs": {
+      "model_type": "flux",
+      "rel_l1_thresh": 0.4,
+      "max_skip_steps": 3,
+      "model": [
+        "11",
+        0
+      ]
+    },
+    "class_type": "TeaCache"
+  },
+  "142": {
+    "inputs": {
+      "noise": [
+        "143",
+        0
+      ],
+      "guider": [
+        "144",
+        0
+      ],
+      "sampler": [
+        "146",
+        0
+      ],
+      "sigmas": [
+        "147",
+        0
+      ],
+      "latent_image": [
+        "211",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced"
+  },
+  "143": {
+    "inputs": {
+      "noise_seed": 596566699089183
+    },
+    "class_type": "RandomNoise"
+  },
+  "144": {
+    "inputs": {
+      "model": [
+        "204",
+        0
+      ],
+      "conditioning": [
+        "145",
+        0
+      ]
+    },
+    "class_type": "BasicGuider"
+  },
+  "145": {
+    "inputs": {
+      "guidance": 50,
+      "conditioning": [
+        "254",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance"
+  },
+  "146": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect"
+  },
+  "147": {
+    "inputs": {
+      "scheduler": "normal",
+      "steps": 50,
+      "denoise": 0.5000000000000001,
+      "model": [
+        "204",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler"
+  },
+  "151": {
+    "inputs": {
+      "model_type": "flux",
+      "rel_l1_thresh": 0.4,
+      "max_skip_steps": 3,
+      "model": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "TeaCache"
+  },
+  "178": {
+    "inputs": {
+      "expand": 16,
+      "incremental_expandrate": 0,
+      "tapered_corners": true,
+      "flip_input": false,
+      "blur_radius": 8,
+      "lerp_alpha": 1,
+      "decay_factor": 1,
+      "fill_holes": false,
+      "mask": [
+        "524",
+        0
+      ]
+    },
+    "class_type": "GrowMaskWithBlur"
+  },
+  "200": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "676",
+        0
+      ],
+      "source": [
+        "208",
+        0
+      ],
+      "mask": [
+        "178",
+        0
+      ]
+    },
+    "class_type": "ImageCompositeMasked"
+  },
+  "204": {
+    "inputs": {
+      "model": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "DifferentialDiffusion"
+  },
+  "208": {
+    "inputs": {
+      "tile_size": 1024,
+      "overlap": 64,
+      "temporal_size": 64,
+      "temporal_overlap": 8,
+      "samples": [
+        "142",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "VAEDecodeTiled"
+  },
+  "211": {
+    "inputs": {
+      "noise_seed": 1505152929,
+      "noise_strength": 0.1,
+      "normalize": "true",
+      "latent": [
+        "259",
+        2
+      ],
+      "mask": [
+        "178",
+        0
+      ]
+    },
+    "class_type": "InjectLatentNoise+"
+  },
+  "239": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "641",
+        0
+      ],
+      "source": [
+        "135",
+        0
+      ],
+      "mask": [
+        "48",
+        0
+      ]
+    },
+    "class_type": "ImageCompositeMasked"
+  },
+  "244": {
+    "inputs": {
+      "value": 1505152929,
+      "mode": true,
+      "action": "fixed",
+      "last_seed": 1505152929
+    },
+    "class_type": "GlobalSeed //Inspire"
+  },
+  "250": {
+    "inputs": {
+      "face": true,
+      "hair": true,
+      "body": false,
+      "clothes": false,
+      "accessories": false,
+      "background": false,
+      "confidence": 0.4,
+      "detail_method": "VITMatte",
+      "detail_erode": 6,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "images": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "LayerMask: PersonMaskUltra V2"
+  },
+  "252": {
+    "inputs": {
+      "mask1": [
+        "95",
+        1
+      ],
+      "mask2": [
+        "250",
+        1
+      ]
+    },
+    "class_type": "AddMask"
+  },
+  "254": {
+    "inputs": {
+      "downsampling_factor": 1,
+      "downsampling_function": "area",
+      "mode": "autocrop with mask",
+      "weight": 1,
+      "autocrop_margin": 0.1,
+      "conditioning": [
+        "259",
+        0
+      ],
+      "image": [
+        "617",
+        0
+      ],
+      "mask": [
+        "476",
+        0
+      ],
+      "style_model": [
+        "9",
+        0
+      ],
+      "clip_vision": [
+        "24",
+        0
+      ]
+    },
+    "class_type": "ReduxAdvanced"
+  },
+  "259": {
+    "inputs": {
+      "noise_mask": true,
+      "positive": [
+        "682",
+        0
+      ],
+      "pixels": [
+        "676",
+        0
+      ],
+      "mask": [
+        "178",
+        0
+      ],
+      "negative": [
+        "19",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "InpaintModelConditioning"
+  },
+  "287": {
+    "inputs": {
+      "rescale_algorithm": "bislerp",
+      "stitch": [
+        "511",
+        0
+      ],
+      "inpainted_image": [
+        "62",
+        0
+      ]
+    },
+    "class_type": "InpaintStitch"
+  },
+  "313": {
+    "inputs": {
+      "mask": [
+        "405",
+        0
+      ]
+    },
+    "class_type": "MaskToImage"
+  },
+  "314": {
+    "inputs": {
+      "width": [
+        "315",
+        0
+      ],
+      "height": [
+        "315",
+        1
+      ],
+      "interpolation": "nearest",
+      "method": "stretch",
+      "condition": "always",
+      "multiple_of": 0,
+      "image": [
+        "313",
+        0
+      ]
+    },
+    "class_type": "ImageResize+"
+  },
+  "315": {
+    "inputs": {},
+    "class_type": "GetImageSize+"
+  },
+  "320": {
+    "inputs": {
+      "image": [
+        "239",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "350": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "356": {
+    "inputs": {
+      "purge_cache": true,
+      "purge_models": true,
+      "anything": [
+        "320",
+        0
+      ]
+    },
+    "class_type": "LayerUtility: PurgeVRAM V2"
+  },
+  "360": {
+    "inputs": {
+      "expand": 64,
+      "tapered_corners": true,
+      "mask": [
+        "43",
+        0
+      ]
+    },
+    "class_type": "GrowMask"
+  },
+  "364": {
+    "inputs": {
+      "method": "convex_hull",
+      "distance": 12,
+      "join_style": "round",
+      "invert": false,
+      "masks": [
+        "90",
+        0
+      ]
+    },
+    "class_type": "MaskExpand(Molook)"
+  },
+  "394": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": "min_.*",
+      "group_regex": ".*",
+      "INT": [
+        "60",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "395": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": "max_.*",
+      "group_regex": ".*",
+      "INT": [
+        "59",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "403": {
+    "inputs": {
+      "masks": [
+        "71",
+        0
+      ]
+    },
+    "class_type": "Mask Fill Holes"
+  },
+  "404": {
+    "inputs": {
+      "mask": [
+        "403",
+        0
+      ]
+    },
+    "class_type": "MaskToImage"
+  },
+  "405": {
+    "inputs": {
+      "channel": "red",
+      "image": [
+        "644",
+        0
+      ]
+    },
+    "class_type": "ImageToMask"
+  },
+  "408": {
+    "inputs": {
+      "mask": [
+        "44",
+        2
+      ]
+    },
+    "class_type": "MaskToImage"
+  },
+  "412": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "413",
+        0
+      ],
+      "source": [
+        "641",
+        0
+      ],
+      "mask": [
+        "48",
+        0
+      ]
+    },
+    "class_type": "ImageCompositeMasked"
+  },
+  "413": {
+    "inputs": {
+      "type": "image",
+      "width": 512,
+      "height": 512,
+      "resolution": "1024x1024 (1.0)",
+      "batch_size": 1,
+      "color": 0,
+      "image": [
+        "641",
+        0
+      ]
+    },
+    "class_type": "ml-NewImage"
+  },
+  "415": {
+    "inputs": {
+      "context_expand_pixels": 64,
+      "context_expand_factor": 1,
+      "fill_mask_holes": true,
+      "invert_mask": false,
+      "rescale_algorithm": "bicubic",
+      "mode": "ranged size",
+      "force_width": 1024,
+      "force_height": 1024,
+      "rescale_factor": 1,
+      "padding": 64,
+      "image": [
+        "2",
+        0
+      ],
+      "mask": [
+        "94",
+        0
+      ],
+      "optional_context_mask": [
+        "360",
+        0
+      ],
+      "min_width": [
+        "60",
+        0
+      ],
+      "min_height": [
+        "60",
+        0
+      ],
+      "max_width": [
+        "59",
+        0
+      ],
+      "max_height": [
+        "59",
+        0
+      ],
+      "blur_mask_pixels": [
+        "419",
+        0
+      ],
+      "blend_pixels": [
+        "423",
+        0
+      ]
+    },
+    "class_type": "InpaintCrop"
+  },
+  "418": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": "blur_mask_pixels",
+      "group_regex": ".*",
+      "FLOAT": [
+        "419",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "419": {
+    "inputs": {
+      "value": 16
+    },
+    "class_type": "easy float"
+  },
+  "422": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": "blend_pixels",
+      "group_regex": ".*",
+      "FLOAT": [
+        "423",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "423": {
+    "inputs": {
+      "value": 16.000000000000004
+    },
+    "class_type": "easy float"
+  },
+  "428": {
+    "inputs": {
+      "model_name": "4x_NMKD-Siax_200k.pth"
+    },
+    "class_type": "UpscaleModelLoader"
+  },
+  "430": {
+    "inputs": {
+      "downscale_by": 1,
+      "rescale_method": "nearest-exact",
+      "precision": "auto",
+      "batch_size": 1,
+      "upscale_model": [
+        "428",
+        0
+      ],
+      "image": [
+        "605",
+        0
+      ]
+    },
+    "class_type": "FL_UpscaleModel"
+  },
+  "431": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "megapixels": 8,
+      "image": [
+        "430",
+        0
+      ]
+    },
+    "class_type": "ImageScaleToTotalPixels"
+  },
+  "432": {
+    "inputs": {
+      "text_input": "",
+      "task": "detailed_caption",
+      "fill_mask": true,
+      "keep_model_loaded": false,
+      "max_new_tokens": 1024,
+      "num_beams": 3,
+      "do_sample": true,
+      "output_mask_select": "",
+      "seed": 15974409186221,
+      "image": [
+        "605",
+        0
+      ],
+      "florence2_model": [
+        "457",
+        0
+      ]
+    },
+    "class_type": "Florence2Run"
+  },
+  "437": {
+    "inputs": {
+      "width_factor": [
+        "461",
+        0
+      ],
+      "height_factor": [
+        "462",
+        0
+      ],
+      "overlap_rate": 0.05,
+      "image": [
+        "459",
+        0
+      ]
+    },
+    "class_type": "TTP_Tile_image_size"
+  },
+  "438": {
+    "inputs": {
+      "tile_width": [
+        "437",
+        0
+      ],
+      "tile_height": [
+        "437",
+        1
+      ],
+      "image": [
+        "459",
+        0
+      ]
+    },
+    "class_type": "TTP_Image_Tile_Batch"
+  },
+  "439": {
+    "inputs": {
+      "image": [
+        "438",
+        0
+      ]
+    },
+    "class_type": "easy imageBatchToImageList"
+  },
+  "440": {
+    "inputs": {
+      "text_input": "",
+      "task": "detailed_caption",
+      "fill_mask": true,
+      "keep_model_loaded": false,
+      "max_new_tokens": 1024,
+      "num_beams": 3,
+      "do_sample": true,
+      "output_mask_select": "",
+      "seed": 9314168758101,
+      "image": [
+        "439",
+        0
+      ],
+      "florence2_model": [
+        "457",
+        0
+      ]
+    },
+    "class_type": "Florence2Run"
+  },
+  "442": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "443": {
+    "inputs": {
+      "guidance": 3,
+      "conditioning": [
+        "442",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance"
+  },
+  "444": {
+    "inputs": {
+      "pixels": [
+        "439",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "VAEEncode"
+  },
+  "445": {
+    "inputs": {
+      "noise_seed": 695901303275387,
+      "noise_strength": 0.1,
+      "normalize": "false",
+      "latent": [
+        "444",
+        0
+      ]
+    },
+    "class_type": "InjectLatentNoise+"
+  },
+  "446": {
+    "inputs": {
+      "scheduler": "exponential",
+      "steps": 10,
+      "denoise": 0.8000000000000002,
+      "model": [
+        "151",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler"
+  },
+  "447": {
+    "inputs": {
+      "conditioning": [
+        "443",
+        0
+      ],
+      "model": [
+        "151",
+        0
+      ]
+    },
+    "class_type": "BasicGuider"
+  },
+  "448": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect"
+  },
+  "449": {
+    "inputs": {
+      "noise_seed": 1505152929
+    },
+    "class_type": "RandomNoise"
+  },
+  "450": {
+    "inputs": {
+      "noise": [
+        "449",
+        0
+      ],
+      "guider": [
+        "447",
+        0
+      ],
+      "sampler": [
+        "448",
+        0
+      ],
+      "sigmas": [
+        "446",
+        0
+      ],
+      "latent_image": [
+        "445",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced"
+  },
+  "451": {
+    "inputs": {
+      "tile_size": 1024,
+      "overlap": 64,
+      "temporal_size": 64,
+      "temporal_overlap": 8,
+      "samples": [
+        "450",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "VAEDecodeTiled"
+  },
+  "452": {
+    "inputs": {
+      "images": [
+        "451",
+        0
+      ]
+    },
+    "class_type": "easy imageListToImageBatch"
+  },
+  "453": {
+    "inputs": {
+      "padding": 128,
+      "tiles": [
+        "452",
+        0
+      ],
+      "positions": [
+        "438",
+        1
+      ],
+      "original_size": [
+        "438",
+        2
+      ],
+      "grid_size": [
+        "438",
+        3
+      ]
+    },
+    "class_type": "TTP_Image_Assy"
+  },
+  "456": {
+    "inputs": {
+      "images": [
+        "453",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "457": {
+    "inputs": {
+      "model": "microsoft/Florence-2-large",
+      "precision": "fp16",
+      "attention": "sdpa"
+    },
+    "class_type": "DownloadAndLoadFlorence2Model"
+  },
+  "458": {
+    "inputs": {
+      "FL2MODEL": [
+        "457",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere"
+  },
+  "459": {
+    "inputs": {
+      "purge_cache": true,
+      "purge_models": true,
+      "anything": [
+        "642",
+        0
+      ]
+    },
+    "class_type": "LayerUtility: PurgeVRAM V2"
+  },
+  "460": {
+    "inputs": {
+      "image": [
+        "642",
+        0
+      ]
+    },
+    "class_type": "GetImageSize+"
+  },
+  "461": {
+    "inputs": {
+      "value": "a / 1024",
+      "a": [
+        "460",
+        0
+      ]
+    },
+    "class_type": "SimpleMath+"
+  },
+  "462": {
+    "inputs": {
+      "value": "a / 1024",
+      "a": [
+        "460",
+        1
+      ]
+    },
+    "class_type": "SimpleMath+"
+  },
+  "468": {
+    "inputs": {
+      "image": "",
+      "image_base64": ""
+    },
+    "class_type": "ml-ImageFromBase64"
+  },
+  "469": {
+    "inputs": {
+      "image": "",
+      "image_base64": ""
+    },
+    "class_type": "ml-ImageFromBase64"
+  },
+  "470": {
+    "inputs": {
+      "module": 64,
+      "mode": "manual",
+      "position": "center",
+      "image": [
+        "431",
+        0
+      ]
+    },
+    "class_type": "ml-ImageModuleCrop"
+  },
+  "474": {
+    "inputs": {
+      "model_name": "segm/person_yolov8m-seg.pt"
+    },
+    "class_type": "UltralyticsDetectorProvider"
+  },
+  "475": {
+    "inputs": {
+      "threshold": 0.5,
+      "dilation": 4,
+      "bbox_detector": [
+        "474",
+        0
+      ],
+      "image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "BboxDetectorCombined_v2"
+  },
+  "476": {
+    "inputs": {
+      "mask1": [
+        "475",
+        0
+      ],
+      "mask2": [
+        "127",
+        1
+      ]
+    },
+    "class_type": "BitwiseAndMask"
+  },
+  "507": {
+    "inputs": {
+      "width": [
+        "510",
+        0
+      ],
+      "height": [
+        "510",
+        1
+      ],
+      "position": "top-left",
+      "x_offset": 0,
+      "y_offset": 0,
+      "image": [
+        "356",
+        0
+      ]
+    },
+    "class_type": "ImageCrop+"
+  },
+  "510": {
+    "inputs": {
+      "image": [
+        "44",
+        1
+      ]
+    },
+    "class_type": "GetImageSize+"
+  },
+  "511": {
+    "inputs": {
+      "context_expand_pixels": 20,
+      "context_expand_factor": 1,
+      "fill_mask_holes": true,
+      "blur_mask_pixels": 16,
+      "invert_mask": false,
+      "blend_pixels": 16,
+      "rescale_algorithm": "bicubic",
+      "mode": "ranged size",
+      "force_width": 1024,
+      "force_height": 1024,
+      "rescale_factor": 1,
+      "min_width": 512,
+      "min_height": 512,
+      "max_width": 2048,
+      "max_height": 2048,
+      "padding": 64,
+      "image": [
+        "507",
+        0
+      ],
+      "mask": [
+        "519",
+        1
+      ],
+      "optional_context_mask": [
+        "513",
+        0
+      ]
+    },
+    "class_type": "InpaintCrop"
+  },
+  "512": {
+    "inputs": {
+      "model_name": "segm/person_yolov8m-seg.pt"
+    },
+    "class_type": "UltralyticsDetectorProvider"
+  },
+  "513": {
+    "inputs": {
+      "threshold": 0.5,
+      "dilation": 0,
+      "segm_detector": [
+        "512",
+        1
+      ],
+      "image": [
+        "507",
+        0
+      ]
+    },
+    "class_type": "SegmDetectorCombined_v2"
+  },
+  "514": {
+    "inputs": {
+      "inputcount": 2,
+      "direction": "right",
+      "match_image_size": true,
+      "Update inputs": "",
+      "image_1": [
+        "511",
+        1
+      ],
+      "image_2": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "ImageConcatMulti"
+  },
+  "516": {
+    "inputs": {
+      "mask": [
+        "511",
+        2
+      ]
+    },
+    "class_type": "MaskToImage"
+  },
+  "517": {
+    "inputs": {
+      "inputcount": 2,
+      "direction": "right",
+      "match_image_size": true,
+      "Update inputs": "",
+      "image_1": [
+        "516",
+        0
+      ],
+      "image_2": [
+        "70",
+        0
+      ]
+    },
+    "class_type": "ImageConcatMulti"
+  },
+  "518": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": false,
+      "hair": false,
+      "hat": false,
+      "sunglass": false,
+      "left_arm": true,
+      "right_arm": true,
+      "left_leg": true,
+      "right_leg": true,
+      "left_shoe": true,
+      "right_shoe": true,
+      "upper_clothes": true,
+      "skirt": true,
+      "pants": true,
+      "dress": true,
+      "belt": true,
+      "bag": true,
+      "scarf": true
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "519": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "507",
+        0
+      ],
+      "segformer_pipeline": [
+        "518",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "524": {
+    "inputs": {
+      "channel": "red",
+      "image": [
+        "648",
+        0
+      ]
+    },
+    "class_type": "ImageToMask"
+  },
+  "605": {
+    "inputs": {
+      "rescale_algorithm": "bislerp",
+      "stitch": [
+        "415",
+        0
+      ],
+      "inpainted_image": [
+        "287",
+        0
+      ]
+    },
+    "class_type": "InpaintStitch"
+  },
+  "609": {
+    "inputs": {
+      "model": "segformer_b3_clothes",
+      "face": true,
+      "hair": true,
+      "hat": true,
+      "sunglass": true,
+      "left_arm": true,
+      "right_arm": true,
+      "left_leg": true,
+      "right_leg": true,
+      "left_shoe": true,
+      "right_shoe": true,
+      "upper_clothes": true,
+      "skirt": true,
+      "pants": true,
+      "dress": true,
+      "belt": true,
+      "bag": true,
+      "scarf": true
+    },
+    "class_type": "LayerMask: SegformerClothesPipelineLoader"
+  },
+  "610": {
+    "inputs": {
+      "detail_method": "VITMatte",
+      "detail_erode": 8,
+      "detail_dilate": 6,
+      "black_point": 0.01,
+      "white_point": 0.99,
+      "process_detail": true,
+      "device": "cuda",
+      "max_megapixels": 2,
+      "image": [
+        "469",
+        0
+      ],
+      "segformer_pipeline": [
+        "609",
+        0
+      ]
+    },
+    "class_type": "LayerMask: SegformerUltraV2"
+  },
+  "612": {
+    "inputs": {
+      "invert_mask": false,
+      "detect": "mask_area",
+      "top_reserve": 64,
+      "bottom_reserve": 64,
+      "left_reserve": 64,
+      "right_reserve": 64,
+      "round_to_multiple": "8",
+      "image": [
+        "469",
+        0
+      ],
+      "mask": [
+        "610",
+        1
+      ]
+    },
+    "class_type": "LayerUtility: CropByMask V2"
+  },
+  "617": {
+    "inputs": {
+      "image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "628": {
+    "inputs": {
+      "type": "image",
+      "width": 512,
+      "height": 512,
+      "resolution": "1024x1024 (1.0)",
+      "batch_size": 1,
+      "color": 0,
+      "image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "ml-NewImage"
+  },
+  "631": {
+    "inputs": {
+      "image": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "GetImageSize+"
+  },
+  "641": {
+    "inputs": {
+      "image": [
+        "643",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "642": {
+    "inputs": {
+      "amount": 0.4000000000000001,
+      "image": [
+        "470",
+        0
+      ]
+    },
+    "class_type": "ImageCASharpening+"
+  },
+  "643": {
+    "inputs": {
+      "target_aspect_ratio": 1,
+      "direction": "top-left",
+      "color": 7105644,
+      "fill_method": "color",
+      "image": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "ml-ExpandImageToAspectRatio"
+  },
+  "644": {
+    "inputs": {
+      "target_aspect_ratio": 1,
+      "direction": "top-left",
+      "color": 0,
+      "fill_method": "color",
+      "image": [
+        "404",
+        0
+      ]
+    },
+    "class_type": "ml-ExpandImageToAspectRatio"
+  },
+  "647": {
+    "inputs": {
+      "target_aspect_ratio": 1,
+      "direction": "top-left",
+      "color": 7105644,
+      "fill_method": "color",
+      "image": [
+        "514",
+        0
+      ]
+    },
+    "class_type": "ml-ExpandImageToAspectRatio"
+  },
+  "648": {
+    "inputs": {
+      "target_aspect_ratio": 1,
+      "direction": "top-left",
+      "color": 0,
+      "fill_method": "color",
+      "image": [
+        "517",
+        0
+      ]
+    },
+    "class_type": "ml-ExpandImageToAspectRatio"
+  },
+  "657": {
+    "inputs": {
+      "image": [
+        "641",
+        0
+      ]
+    },
+    "class_type": "GetImageSize+"
+  },
+  "667": {
+    "inputs": {
+      "model": "gpt-4o-mini",
+      "base_url": "api.ganjiuwanshi.com",
+      "secret_key": "sk-P4nT6VcpCdKewq0M9b92469b4d94487c9e1d715d52Fd1c93",
+      "system_prompt": "Describe the main clothes in the image.",
+      "prompt": "",
+      "quality": "low",
+      "max_tokens": 512,
+      "temperature": 0.6000000000000001,
+      "image": [
+        "617",
+        0
+      ]
+    },
+    "class_type": "ml-LLMAsk(OpenAI)"
+  },
+  "668": {
+    "inputs": {
+      "mode": "raw value",
+      "input": [
+        "667",
+        0
+      ]
+    },
+    "class_type": "DisplayAny"
+  },
+  "671": {
+    "inputs": {
+      "text": [
+        "667",
+        0
+      ],
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "Text to Conditioning"
+  },
+  "674": {
+    "inputs": {
+      "amount": 0.4000000000000001,
+      "image": [
+        "641",
+        0
+      ]
+    },
+    "class_type": "ImageCASharpening+"
+  },
+  "675": {
+    "inputs": {
+      "title_regex": ".*",
+      "input_regex": "larger_.*",
+      "group_regex": ".*",
+      "INT": [
+        "59",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere?"
+  },
+  "676": {
+    "inputs": {
+      "image": [
+        "647",
+        0
+      ]
+    },
+    "class_type": "ImagePass"
+  },
+  "682": {
+    "inputs": {
+      "text": [
+        "667",
+        0
+      ],
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "Text to Conditioning"
+  }
+}

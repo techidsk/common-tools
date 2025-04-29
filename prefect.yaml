@@ -1,0 +1,31 @@
+name: comfyui-batch-service
+prefect-version: 2.14.12
+
+build: null
+
+push: null
+
+pull: null
+
+deployments:
+  - name: comfyui-batch-process
+    version: null
+    tags: []
+    description: ComfyUI Batch Process Service
+    schedule: null
+    flow_name: main_flow
+    entrypoint: run_service.py:main_flow
+    parameters:
+      target_folders:
+        - "C:/Users/molook/Desktop/batch"
+      workflow_path: "workflows/flux-i2i/wf-0108.json"
+      node_config_path: "workflows/flux-i2i/config.json"
+      batch_size: 3
+      folder_keywords: []
+      servers:
+        - "http://10.31.0.139:8188"
+        - "http://10.31.0.139:8189"
+        - "http://10.31.0.141:9199"
+    work_pool:
+      name: default
+      work_queue_name: default 

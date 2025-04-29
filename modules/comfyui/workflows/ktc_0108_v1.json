@@ -1,0 +1,255 @@
+{
+    "4": {
+      "inputs": {
+        "ckpt_name": "juggernautXL_v9Rundiffusionphoto2.safetensors"
+      },
+      "class_type": "CheckpointLoaderSimple"
+    },
+    "7": {
+      "inputs": {
+        "text": "",
+        "clip": [
+          "4",
+          1
+        ]
+      },
+      "class_type": "CLIPTextEncode"
+    },
+    "12": {
+      "inputs": {
+        "pixels": [
+          "224",
+          0
+        ],
+        "vae": [
+          "4",
+          2
+        ]
+      },
+      "class_type": "VAEEncode"
+    },
+    "29": {
+      "inputs": {
+        "strength": 0.65,
+        "start_percent": 0,
+        "end_percent": 0.8,
+        "positive": [
+          "35",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "control_net": [
+          "30",
+          0
+        ],
+        "image": [
+          "219",
+          0
+        ],
+        "vae": [
+          "4",
+          2
+        ]
+      },
+      "class_type": "ControlNetApplyAdvanced"
+    },
+    "30": {
+      "inputs": {
+        "control_net_name": "sdxl/mistoLine_rank256.safetensors"
+      },
+      "class_type": "ControlNetLoader"
+    },
+    "35": {
+      "inputs": {
+        "text": "",
+        "clip": [
+          "4",
+          1
+        ]
+      },
+      "class_type": "CLIPTextEncode"
+    },
+    "219": {
+      "inputs": {
+        "safe": "enable",
+        "resolution": 1024,
+        "image": [
+          "295",
+          0
+        ]
+      },
+      "class_type": "PiDiNetPreprocessor"
+    },
+    "224": {
+      "inputs": {
+        "image": [
+          "219",
+          0
+        ]
+      },
+      "class_type": "ImageInvert"
+    },
+    "233": {
+      "inputs": {
+        "strength": 0.4,
+        "start_percent": 0,
+        "end_percent": 0.8,
+        "positive": [
+          "29",
+          0
+        ],
+        "negative": [
+          "29",
+          1
+        ],
+        "control_net": [
+          "234",
+          0
+        ],
+        "image": [
+          "280",
+          0
+        ],
+        "vae": [
+          "4",
+          2
+        ]
+      },
+      "class_type": "ControlNetApplyAdvanced"
+    },
+    "234": {
+      "inputs": {
+        "control_net_name": "sdxl/controlnet-depth-sdxl-1.0.safetensors"
+      },
+      "class_type": "ControlNetLoader"
+    },
+    "236": {
+      "inputs": {
+        "seed": 377554035627409,
+        "steps": 15,
+        "cfg": 3,
+        "sampler_name": "euler_ancestral",
+        "scheduler": "normal",
+        "denoise": 1,
+        "positive": [
+          "233",
+          0
+        ],
+        "negative": [
+          "233",
+          1
+        ],
+        "latent_image": [
+          "12",
+          0
+        ],
+        "model": [
+          "4",
+          0
+        ]
+      },
+      "class_type": "KSampler"
+    },
+    "237": {
+      "inputs": {
+        "samples": [
+          "236",
+          0
+        ],
+        "vae": [
+          "4",
+          2
+        ]
+      },
+      "class_type": "VAEDecode"
+    },
+    "239": {
+      "inputs": {
+        "value": 335,
+        "mode": true,
+        "action": "fixed",
+        "last_seed": 335
+      },
+      "class_type": "GlobalSeed //Inspire"
+    },
+    "280": {
+      "inputs": {
+        "ckpt_name": "depth_anything_v2_vitb.pth",
+        "resolution": 1024,
+        "image": [
+          "295",
+          0
+        ]
+      },
+      "class_type": "DepthAnythingV2Preprocessor"
+    },
+    "287": {
+      "inputs": {
+        "MODEL": [
+          "4",
+          0
+        ]
+      },
+      "class_type": "Anything Everywhere"
+    },
+    "288": {
+      "inputs": {
+        "CLIP": [
+          "4",
+          1
+        ]
+      },
+      "class_type": "Anything Everywhere"
+    },
+    "289": {
+      "inputs": {
+        "VAE": [
+          "4",
+          2
+        ]
+      },
+      "class_type": "Anything Everywhere"
+    },
+    "295": {
+      "inputs": {
+        "base64_data": "",
+        "image_output": "Hide",
+        "save_prefix": "ComfyUI"
+      },
+      "class_type": "easy loadImageBase64"
+    },
+    "297": {
+      "inputs": {
+        "output_path": "caar",
+        "filename_prefix": "ComfyUI",
+        "filename_delimiter": "_",
+        "filename_number_padding": 4,
+        "filename_number_start": "false",
+        "extension": "jpg",
+        "dpi": 72,
+        "quality": 100,
+        "optimize_image": "true",
+        "lossless_webp": "false",
+        "overwrite_mode": "false",
+        "show_history": "false",
+        "show_history_by_prefix": "true",
+        "embed_workflow": "true",
+        "show_previews": "true",
+        "images": [
+          "237",
+          0
+        ]
+      },
+      "class_type": "Image Save"
+    },
+    "298": {
+      "inputs": {
+        "image": "example.png",
+        "upload": "image"
+      },
+      "class_type": "LoadImage"
+    }
+  }

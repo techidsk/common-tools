@@ -1,0 +1,18 @@
+{
+    "image": {
+        "path": "/295/inputs/base64_data",
+        "value": ""
+    },
+    "output_folder": {
+        "path": "/297/inputs/output_path",
+        "value": ""
+    },
+    "prompt": {
+        "path": "/35/inputs/text",
+        "value": "Coloring pages, plain design, black and white"
+    },
+    "negative_prompt": {
+        "path": "/7/inputs/negative_prompt",
+        "value": "text, watermark, 3d render, photo, texture, detail"
+    }
+}

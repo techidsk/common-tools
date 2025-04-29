@@ -1,0 +1,339 @@
+{
+    "1": {
+      "inputs": {
+        "unet_name": "flux/flux1-dev-Q6_K.gguf"
+      },
+      "class_type": "UnetLoaderGGUF"
+    },
+    "2": {
+      "inputs": {
+        "clip_name1": "ViT-L-14-TEXT-detail-improved-hiT-GmP-HF.safetensors",
+        "clip_name2": "t5-v1_1-xxl-encoder-Q5_K_M.gguf",
+        "type": "flux"
+      },
+      "class_type": "DualCLIPLoaderGGUF"
+    },
+    "5": {
+      "inputs": {
+        "conditioning": [
+          "72",
+          0
+        ]
+      },
+      "class_type": "ConditioningZeroOut"
+    },
+    "6": {
+      "inputs": {
+        "sampler_name": "deis"
+      },
+      "class_type": "KSamplerSelect"
+    },
+    "7": {
+      "inputs": {
+        "scheduler": "beta",
+        "steps": 24,
+        "denoise": 1,
+        "model": [
+          "1",
+          0
+        ]
+      },
+      "class_type": "BasicScheduler"
+    },
+    "10": {
+      "inputs": {
+        "image": "",
+        "image_base64": "",
+        "upload": "image"
+      },
+      "class_type": "ml-ImageFromBase64"
+    },
+    "11": {
+      "inputs": {
+        "upscale_method": "nearest-exact",
+        "crop": "center",
+        "image": [
+          "10",
+          0
+        ]
+      },
+      "class_type": "Resize Image for SDXL"
+    },
+    "13": {
+      "inputs": {
+        "type": "image",
+        "width": 512,
+        "height": 512,
+        "resolution": "1024x1024 (1.0)",
+        "batch_size": 1,
+        "color": 0,
+        "image": [
+          "11",
+          0
+        ]
+      },
+      "class_type": "ml-NewImage"
+    },
+    "14": {
+      "inputs": {
+        "vae_name": "flux_vae.safetensors"
+      },
+      "class_type": "VAELoader"
+    },
+    "30": {
+      "inputs": {
+        "add_noise": true,
+        "noise_seed": 278772643918377,
+        "cfg": 1,
+        "positive": [
+          "70",
+          0
+        ],
+        "negative": [
+          "5",
+          0
+        ],
+        "sampler": [
+          "6",
+          0
+        ],
+        "sigmas": [
+          "7",
+          0
+        ],
+        "latent_image": [
+          "13",
+          1
+        ],
+        "model": [
+          "1",
+          0
+        ]
+      },
+      "class_type": "SamplerCustom"
+    },
+    "32": {
+      "inputs": {
+        "samples": [
+          "30",
+          0
+        ],
+        "vae": [
+          "14",
+          0
+        ]
+      },
+      "class_type": "VAEDecode"
+    },
+    "35": {
+      "inputs": {
+        "style_model_name": "flux1-redux-dev.safetensors"
+      },
+      "class_type": "StyleModelLoader"
+    },
+    "37": {
+      "inputs": {
+        "clip_name": "sigclip_vision_patch14_384.safetensors"
+      },
+      "class_type": "CLIPVisionLoader"
+    },
+    "43": {
+      "inputs": {
+        "downsampling_factor": 1,
+        "downsampling_function": "nearest-exact",
+        "mode": "keep aspect ratio",
+        "weight": 1,
+        "autocrop_margin": 0.1,
+        "conditioning": [
+          "72",
+          0
+        ],
+        "image": [
+          "11",
+          0
+        ],
+        "style_model": [
+          "35",
+          0
+        ],
+        "clip_vision": [
+          "37",
+          0
+        ]
+      },
+      "class_type": "ReduxAdvanced"
+    },
+    "45": {
+      "inputs": {},
+      "class_type": "Anything Everywhere"
+    },
+    "46": {
+      "inputs": {
+        "CLIP": [
+          "2",
+          0
+        ]
+      },
+      "class_type": "Anything Everywhere"
+    },
+    "47": {
+      "inputs": {
+        "STYLE_MODEL": [
+          "35",
+          0
+        ]
+      },
+      "class_type": "Anything Everywhere"
+    },
+    "48": {
+      "inputs": {
+        "CLIP_VISION": [
+          "37",
+          0
+        ]
+      },
+      "class_type": "Anything Everywhere"
+    },
+    "49": {
+      "inputs": {
+        "value": 0,
+        "mode": true,
+        "action": "fixed",
+        "last_seed": 0
+      },
+      "class_type": "GlobalSeed //Inspire"
+    },
+    "53": {
+      "inputs": {
+        "VAE": [
+          "14",
+          0
+        ]
+      },
+      "class_type": "Anything Everywhere"
+    },
+    "58": {
+      "inputs": {
+        "images": [
+          "32",
+          0
+        ]
+      },
+      "class_type": "PreviewImage"
+    },
+    "70": {
+      "inputs": {
+        "guidance": 2.6,
+        "conditioning": [
+          "43",
+          0
+        ]
+      },
+      "class_type": "FluxGuidance"
+    },
+    "71": {
+      "inputs": {
+        "model": "gpt-4o-mini",
+        "base_url": "api.ganjiuwanshi.com",
+        "secret_key": "sk-P4nT6VcpCdKewq0M9b92469b4d94487c9e1d715d52Fd1c93",
+        "system_prompt": "Describe the image detaily and response in 200 words.\n\nFocus the person shape, and describe it fat or slim.",
+        "prompt": "Please help me describe it.",
+        "quality": "low",
+        "max_tokens": 1024,
+        "temperature": 0.7,
+        "image": [
+          "11",
+          0
+        ]
+      },
+      "class_type": "ml-LLMAsk(OpenAI)"
+    },
+    "72": {
+      "inputs": {
+        "text": [
+          "71",
+          0
+        ],
+        "clip": [
+          "2",
+          0
+        ]
+      },
+      "class_type": "Text to Conditioning"
+    },
+    "73": {
+      "inputs": {
+        "direction": "right",
+        "match_image_size": true,
+        "image1": [
+          "11",
+          0
+        ],
+        "image2": [
+          "11",
+          0
+        ]
+      },
+      "class_type": "ImageConcanate"
+    },
+    "74": {
+      "inputs": {
+        "pixels": [
+          "73",
+          0
+        ],
+        "vae": [
+          "14",
+          0
+        ]
+      },
+      "class_type": "VAEEncode"
+    },
+    "75": {
+      "inputs": {
+        "image": [
+          "13",
+          0
+        ]
+      },
+      "class_type": "ImageInvert"
+    },
+    "76": {
+      "inputs": {
+        "direction": "right",
+        "match_image_size": true,
+        "image1": [
+          "13",
+          0
+        ],
+        "image2": [
+          "75",
+          0
+        ]
+      },
+      "class_type": "ImageConcanate"
+    },
+    "77": {
+      "inputs": {
+        "channel": "red",
+        "image": [
+          "76",
+          0
+        ]
+      },
+      "class_type": "ImageToMask"
+    },
+    "79": {
+      "inputs": {
+        "samples": [
+          "74",
+          0
+        ],
+        "mask": [
+          "77",
+          0
+        ]
+      },
+      "class_type": "SetLatentNoiseMask"
+    }
+  }

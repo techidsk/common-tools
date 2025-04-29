@@ -1,0 +1,79 @@
+{
+  "model_image": {
+    "path": "/468/inputs/image_base64",
+    "value": ""
+  },
+  "reference_image": {
+    "path": "/469/inputs/image_base64",
+    "value": ""
+  },
+  "random_seed": {
+    "path": [
+      "/244/inputs/value",
+      "/29/inputs/noise_seed",
+      "/449/inputs/noise_seed",
+      "/432/inputs/seed",
+      "/440/inputs/seed"
+    ],
+    "value": null,
+    "type": [
+      "random",
+      [
+        0,
+        2147483647
+      ]
+    ]
+  },
+  "random_seed2": {
+    "path": [
+      "/143/inputs/noise_seed"
+    ],
+    "value": null,
+    "type": [
+      "random",
+      [
+        0,
+        2147483647
+      ]
+    ]
+  },
+  "random_seed3": {
+    "path": [
+      "/485/inputs/noise_seed"
+    ],
+    "value": null,
+    "type": [
+      "random",
+      [
+        0,
+        2147483647
+      ]
+    ]
+  },
+  "random_seed4": {
+    "path": [
+      "/445/inputs/noise_seed"
+    ],
+    "value": null,
+    "type": [
+      "random",
+      [
+        0,
+        2147483647
+      ]
+    ]
+  },
+  "random_seed5": {
+    "path": [
+      "/211/inputs/noise_seed"
+    ],
+    "value": null,
+    "type": [
+      "random",
+      [
+        0,
+        2147483647
+      ]
+    ]
+  }
+}
